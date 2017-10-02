@@ -70,14 +70,14 @@
 	 ground.receiveShadow = true;
 
 	 // TRACKS
-	 let loader = new THREE.BufferGeometryLoader();
 	 let texLoader = new THREE.TextureLoader();
 	 let jloader = new THREE.JSONLoader();
 
 	 let tracks = null;
 
-	 jloader.load("tracks.json", (geometry, mats) => {
-	     texLoader.load("tracksv2.png", (texture) => {
+	 jloader.load("Tracks.json", (geometry, mats) => {
+	     tracks = new THREE.Mesh(geometry, mats);
+	     texLoader.load("TracksV2.png", (texture) => {
 		 tracks = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({map: texture, flatShading: true, shininess: 0, specular: 0x000, morphTargets: true, vertexColors: THREE.FaceColors }) );
 		 tracks.position.set(0,-5,0);
 		 /* tracks.castShadow = true;*/
@@ -85,7 +85,7 @@
 		 scene.add(tracks);
 	     });
 	 });
-
+	 
 	 // POSITION CAMERA
 	 camera.position.z = 5;
 	 camera.position.y = 0.5;
