@@ -13,52 +13,76 @@
 	<script src="threex.keyboardstate.js"></script>
 	<script src="OrbitControls.js"></script>
 	<script>
-	 let scene = new THREE.Scene();
-	 let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 
+	    'use strict';
+
+
+	 const shadowMapRes = 4096;
 	 const deg_to_rad = (deg) => deg * (Math.PI / 180);
 
+	 // SCENE
+	 let scene = new THREE.Scene();
+	 scene.background = new THREE.Color(0x3d8dcc);
+
+	 // CAMERA
+	 let camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 0.1, 1000 );
+
+
+	 // RENDERER
 	 let renderer = new THREE.WebGLRenderer();
 	 renderer.setSize( window.innerWidth, window.innerHeight );
 	 document.body.appendChild( renderer.domElement );
 
 	 renderer.shadowMap.enabled = true;
-	 renderer.shadowMap.type = THREE.PCFShadowMap;
+	 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+	 renderer.shadowMap.renderReverseSided = false;
 
-	 let cube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshStandardMaterial( { color: 0x00ff00 } ) );
+	 renderer.gammaInput = true;
+	 renderer.gammaOutput = true;
+
+
+	 // CUBE
+	 let cube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) );
 	 scene.add( cube );
-	 cube.recieveShadow = true;
-	 cube.castshadow = true;
+	 cube.castShadow = true;
 
-	 /* let myfloor = new THREE.Mesh(new THREE.BoxGeometry ( 100, 100, 1 ), new THREE.MeshStandardMaterial( { color: 0x5DCC69 } ));*/
-	 let myfloor = new THREE.Mesh(new THREE.PlaneGeometry ( 1000, 1000 ), new THREE.MeshStandardMaterial( { color: 0x0000ff } ));
-	 myfloor.rotation.set(deg_to_rad(270),0,0);
-	 myfloor.position.set(0,-5,0);
-	 myfloor.recieveShadow = true;
-	 myfloor.castShadow = false;
-	 scene.add(myfloor);
+	 // GROUND
+	 let ground = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 1000, 1000 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ));
+	 ground.rotation.set(deg_to_rad(270),0,0);
+	 ground.position.set(0,-5,0);
+	 scene.add(ground);
 
+	 ground.receiveShadow = true;
+
+
+	 // LIGHTING
 	 let light = new THREE.DirectionalLight(0xffffff, 1, 100);
-	 light.position.set(0,500,0);
-	 light.shadow.mapSize.width = 512;
-	 light.shadow.mapSize.height = 512;
+	 light.position.set(0,10,0);
+	 light.shadow.mapSize.width = shadowMapRes;
+	 light.shadow.mapSize.height = shadowMapRes;
 	 light.shadow.camera.near = 0.5;
 	 light.shadow.camera.far = 500;
 	 light.castShadow = true;
+
 	 scene.add(light);
 
-	 let skybox = new THREE.Mesh( new THREE.CubeGeometry( 1000, 1000, 1000 ), new THREE.MeshStandardMaterial( { color: 0x3D8DCC, side: THREE.BackSide } ));
-	 scene.add(skybox);
-	 
+	 // AMBIENT LIGHT
+	 let ambient = new THREE.AmbientLight(0x404040);
+	 scene.add(ambient);
+
+
+	 // POSITION CAMERA
 	 camera.position.z = 5;
 	 camera.position.y = 0.5;
 
 	 camera.lookAt(cube.position);
 
-	 let helper = new THREE.CameraHelper( light.shadow.camera );
 
+	 // ORBIT CONTROLS
 	 let controls = new THREE.OrbitControls( camera, renderer.domElement );
 
+
+	 // ANIM LOOP
 	 const animate = () => {
 	     requestAnimationFrame( animate );
 
