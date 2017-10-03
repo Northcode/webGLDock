@@ -11,6 +11,7 @@
     <body>
 	<script src="three.js"></script>
 	<script src="threex.keyboardstate.js"></script>
+	<script src="threex.loop.js"></script>
 	<script src="OrbitControls.js"></script>
 	<script>
 
@@ -58,8 +59,8 @@
 
 	 // CUBE
 	 let cube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) );
-	 scene.add( cube );
 	 cube.castShadow = true;
+	 scene.add( cube );
 
 	 // GROUND
 	 let ground = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 1000, 1000 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ));
@@ -75,28 +76,31 @@
 
 	 let tracks = null;
 
-	 const load_file => (model_f, tex_f) => {
-	     jloader.load(model_f, (geometry, mats) => {
-		 tracks = new THREE.Mesh(geometry, mats);
-		 texLoader.load(tex_f, (texture) => {
-		     tracks = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({map: texture, flatShading: true, shininess: 0, specular: 0x000, morphTargets: true, vertexColors: THREE.FaceColors }) );
-		     tracks.position.set(0,-5,0);
-		     /* tracks.castShadow = true;*/
-		     tracks.receiveShadow = true;
-		     scene.add(tracks);
+	 const load_file = (model_f, tex_f) => {
+	     return new Promise((resolve,reject) => {
+		 jloader.load(model_f, (geometry, mats) => {
+		     tracks = new THREE.Mesh(geometry, mats);
+		     texLoader.load(tex_f, (texture) => {
+			 let mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({map: texture, flatShading: true, shininess: 0, specular: 0x000, morphTargets: true, vertexColors: THREE.FaceColors }) );
+			 resolve(mesh);
+		     }, (progress) => {}, (error) => reject(error));
 		 });
-	     });
+	     }, (prog) => {}, (err) => reject(error));
 	 };
 
-	 jloader.load("tracks.json", (geometry, mats) => {
-	     tracks = new THREE.Mesh(geometry, mats);
-	     texLoader.load("tracksTexture.png", (texture) => {
-		 tracks = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({map: texture, flatShading: true, shininess: 0, specular: 0x000, morphTargets: true, vertexColors: THREE.FaceColors }) );
-		 tracks.position.set(0,-5,0);
-		 /* tracks.castShadow = true;*/
-		 tracks.receiveShadow = true;
-		 scene.add(tracks);
-	     });
+	 let tracksP = load_file ("tracks.json", "TracksUVs.png");
+
+	 tracksP.then(t => {
+	     t.position.set(0,-5,0);
+	     t.receiveShadow = true;
+	     t.geometry.computeBoundingBox();
+	     let size = t.geometry.boundingBox.max.z - t.geometry.boundingBox.min.z
+	     cube.add(t);
+	     for (let i = 1; i < 5; i++) {
+		 let ex = t.clone();
+		 ex.position.z += size * i
+		 cube.add(ex);
+	     }
 	 });
 	 
 	 // POSITION CAMERA
@@ -111,30 +115,37 @@
 
 	 // KEYBOARD
 	 let keyboard = new THREEx.KeyboardState();
-	 
+
+	 let cube2 = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) );
+	 cube2.position.x = 1;
 
 	 // ANIM LOOP
 	 const animate = () => {
-	     requestAnimationFrame( animate );
-
-	     cube.rotation.x += 0.01;
-	     cube.rotation.y += 0.01;
-
-	     update();
-
 	     renderer.render(scene, camera);
 	 };
 
 	 const update = () => {
 	     if (keyboard.pressed("A")) {
 		 console.log("AAAAAAAAAAAAAAAAAAAAAA!");
+		 cube.add(cube2);
 	     }
 	     if (keyboard.pressed("S")) {
 		 console.log("SSSSSSSSSSSSSSSSssssSSSSSs!");
+		 cube.remove(cube2);
 	     }
 	 };
 
-	 animate();
+	 let animLoop = new THREEx.RenderingLoop();
+	 let physLoop = new THREEx.PhysicsLoop(60);
+
+	 animLoop.add(animate);
+
+	 physLoop.add(update);
+	 
+	 animLoop.start();
+	 physLoop.start();
+	 
+
 	</script>
     </body>
     
