@@ -112,6 +112,7 @@
 	 let boatP =  load_file("models/boat.json","textures/boatUVs.png")
 	 let crateP =  load_file("models/crate.json","textures/crate.png")
 	 let house1P =  load_file("models/house1.json","textures/house1UVs.png")
+	 let factoryP =  load_file("models/factory.json","textures/factory.png")
 
 	 let tracks = new THREE.Object3D()
 	 const track_length = 7
@@ -134,7 +135,7 @@
 	 let crane = null
 	 let craneArm1 = null
 	 let craneArm2 = null
-	 let craneGrab = new THREE.Object3D();
+	 let craneGrab = new THREE.Object3D()
 
 	 craneP.then(m => {
 	     m.scale.set(1.2,1,1.2)
@@ -227,7 +228,7 @@
 	     clock.add(minutePivot)
 	     ct.add(clock)
 	     scene.add(ct)
-	 });
+	 })
 
 	 boatP.then(mesh => {
 	     mesh.position.set(35, -2, 0)
@@ -241,13 +242,35 @@
 	     mesh.position.set(10,0,-15)
 	     pickupableobjects.push(mesh)
 	     dockSurface.add(mesh)
-	 });
+	 })
 
 	 house1P.then(mesh => {
 	     mesh.position.set(0,0,10)
 	     mesh.castShadow = true
 	     scene.add(mesh)
-	 });
+	 })
+
+	 let factory = new THREE.Object3D()
+
+	 factoryP.then(mesh => {
+	     mesh.castShadow = true
+	     factory.add(mesh)
+
+	     factory.position.set(-5,0,-35)
+	     factory.rotateY(deg_to_rad(-90))
+	     factory.scale.set(2,2,2)
+
+	     let crateSpawn = new THREE.Object3D()
+
+	     crateSpawn.position.set(0,1,-4)
+
+	     let testCube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
+	     crateSpawn.add(testCube)
+
+	     factory.add(crateSpawn)
+	     
+	     scene.add(factory)
+	 })
 
 	 
 	 // POSITION CAMERA
