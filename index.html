@@ -3,8 +3,8 @@
     <head>
 	<meta charset="utf-8">
 	<style>
-	    body { margin: 0; }
-	    canvas { width: 100%; height: 100%; }
+	    body { margin: 0 }
+	    canvas { width: 100% height: 100% }
 	</style>
     </head>
     
@@ -14,148 +14,202 @@
 	<script src="threex.loop.js"></script>
 	<script src="OrbitControls.js"></script>
 	<script>
+	 'use strict'
 
-	    'use strict';
-
-
-	 const shadowMapRes = 4096;
-	 const deg_to_rad = (deg) => deg * (Math.PI / 180);
+	 const shadowMapRes = 4096
+	 const deg_to_rad = (deg) => deg * (Math.PI / 180)
 
 	 // SCENE
-	 let scene = new THREE.Scene();
-	 scene.background = new THREE.Color(0x3d8dcc);
+	 let scene = new THREE.Scene()
+	 scene.background = new THREE.Color(0x3d8dcc)
 
 	 // CAMERA
-	 let camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 0.1, 1000 );
+	 let camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 0.1, 1000 )
 
 
 	 // RENDERER
-	 let renderer = new THREE.WebGLRenderer();
-	 renderer.setSize( window.innerWidth, window.innerHeight );
-	 document.body.appendChild( renderer.domElement );
+	 let renderer = new THREE.WebGLRenderer()
+	 renderer.setSize( window.innerWidth, window.innerHeight )
+	 document.body.appendChild( renderer.domElement )
 
-	 renderer.shadowMap.enabled = true;
-	 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-	 renderer.shadowMap.renderReverseSided = false;
+	 renderer.shadowMap.enabled = true
+	 renderer.shadowMap.type = THREE.PCFSoftShadowMap
+	 renderer.shadowMap.renderReverseSided = false
 
-	 renderer.gammaInput = true;
-	 renderer.gammaOutput = true;
+	 renderer.gammaInput = true
+	 renderer.gammaOutput = true
 
 	 // LIGHTING
-	 let light = new THREE.DirectionalLight(0xffffff, 1, 100);
-	 light.position.set(0,20,0);
-	 light.shadow.mapSize.width = shadowMapRes;
-	 light.shadow.mapSize.height = shadowMapRes;
-	 light.shadow.camera.near = 0.5;
-	 light.shadow.camera.far = 500;
-	 light.castShadow = true;
+	 let light = new THREE.DirectionalLight(0xffffff, 1, 100)
+	 light.position.set(0,20,0)
+	 light.shadow.mapSize.width = shadowMapRes
+	 light.shadow.mapSize.height = shadowMapRes
+	 light.shadow.camera.near = 0.5
+	 light.shadow.camera.far = 500
+	 light.castShadow = true
 
-	 scene.add(light);
+	 scene.add(light)
 
 	 // AMBIENT LIGHT
-	 let ambient = new THREE.AmbientLight(0x404040);
-	 scene.add(ambient);
+	 let ambient = new THREE.AmbientLight(0x404040)
+	 scene.add(ambient)
 
 
 	 // CUBE
-	 let cube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) );
-	 cube.castShadow = true;
-	 scene.add( cube );
+	 let cube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
+	 cube.castShadow = true
+	 scene.add( cube )
 
 	 // GROUND
-	 let ground = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 1000, 1000 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ));
-	 ground.rotation.set(deg_to_rad(270),0,0);
-	 ground.position.set(0,-5,0);
-	 scene.add(ground);
+	 let ground = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 1000, 1000 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ))
+	 ground.rotation.set(deg_to_rad(270),0,0)
+	 ground.position.set(0,-5,0)
+	 scene.add(ground)
 
-	 ground.receiveShadow = true;
+	 ground.receiveShadow = true
 
-	 // TRACKS
-	 let texLoader = new THREE.TextureLoader();
-	 let jloader = new THREE.JSONLoader();
+	 let texLoader = new THREE.TextureLoader()
+	 let jloader = new THREE.JSONLoader()
 
 	 const load_file = (model_f, tex_f) => {
 	     return new Promise((resolve,reject) => {
 		 jloader.load(model_f, (geometry, mats) => {
-		     tracks = new THREE.Mesh(geometry, mats);
 		     texLoader.load(tex_f, (texture) => {
-			 let mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({map: texture, flatShading: true, shininess: 0, specular: 0x000, morphTargets: true, vertexColors: THREE.FaceColors }) );
-			 resolve(mesh);
-		     }, (progress) => {}, (error) => reject(error));
-		 });
-	     }, (prog) => {}, (err) => reject(error));
-	 };
+			 let mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({map: texture, flatShading: true, shininess: 0, specular: 0x000, morphTargets: true, vertexColors: THREE.FaceColors }) )
+			 resolve(mesh)
+		     }, (progress) => {}, (error) => reject(error))
+		 })
+	     }, (prog) => {}, (err) => reject(error))
+	 }
 
-	 let tracksP = load_file ("tracks.json", "TracksUVs.png");
+	 let tracksP = load_file ("tracks.json", "TracksUVs.png")
+	 let craneP = load_file("craneBase.json","craneBaseUVs.png")
 
-	 let tracks = new THREE.Object3D();
+	 let tracks = new THREE.Object3D()
+	 const track_length = 7
+	 let track_size = 0
 
 	 tracksP.then(t => {
-	     tracks.position.set(0,-5,0);
-	     tracks.receiveShadow = true;
-	     t.geometry.computeBoundingBox();
-	     let size = t.geometry.boundingBox.max.z - t.geometry.boundingBox.min.z
-	     tracks.add(t);
-	     for (let i = 1; i < 5; i++) {
-		 let ex = t.clone();
-		 ex.position.z += size * i
-		 tracks.add(ex);
+	     tracks.position.set(0,-5,0)
+	     tracks.receiveShadow = true
+	     t.geometry.computeBoundingBox()
+	     track_size = t.geometry.boundingBox.max.z - t.geometry.boundingBox.min.z
+	     tracks.add(t)
+	     for (let i = 1; i <= track_length; i++) {
+		 let ex = t.clone()
+		 ex.position.z += track_size * i
+		 tracks.add(ex)
 	     }
-	     scene.add(tracks);
-	 });
+	     scene.add(tracks)
+	 })
 
-	 /* let craneP = load_file("craneBase.json","craneBaseUVs.png");
+	 let crane = null
+	 let craneArm1 = null
+	 let craneArm2 = null
 
-	    craneP.then(m => {
-	    m.position.set(0,1,0);
-	    tracks.add(m);
-	    });*/
+	 craneP.then(m => {
+	     m.scale.set(1.2,1,1.2)
+	     m.position.set(0,0,0)
+	     crane = m
+
+	     let arm1 = new THREE.Mesh( new THREE.BoxGeometry (1,8,1),
+					new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, shininess: 15, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true }))
+
+	     let pivot1 = new THREE.Object3D()
+	     arm1.position.set(0,3.8,0)
+	     pivot1.add(arm1)
+	     pivot1.position.set(0,1,0)
+	     craneArm1 = pivot1
+
+	     let arm2 = new THREE.Mesh( new THREE.BoxGeometry (1,8,1),
+					new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 15, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true }))
+
+	     let joint = new THREE.Mesh( new THREE.CylinderGeometry(0.8,0.8,1.3,15), 
+					 new THREE.MeshPhongMaterial( { color: 0x222222, specular: 0xffffff, shininess: 15, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true }))
+
+	     let pivot2 = new THREE.Object3D()
+	     arm2.position.set(0,3.8,0)
+	     pivot2.add(arm2)
+	     pivot2.position.set(0,7.6,0)
+	     pivot2.rotation.z = deg_to_rad(70)
+	     craneArm2 = pivot2
+
+	     joint.position.set(0,7.6,0)
+	     joint.rotation.x = deg_to_rad(90)
+
+	     craneArm1.add(joint)
+	     craneArm1.add(craneArm2)
+
+
+	     crane.add(craneArm1)
+	     tracks.add(crane)
+	 })
+
 	 
 	 // POSITION CAMERA
-	 camera.position.z = 5;
-	 camera.position.y = 0.5;
+	 camera.position.x = 18
+	 camera.position.y = 8
 
-	 camera.lookAt(cube.position);
+	 camera.lookAt(cube.position)
 
 
 	 // ORBIT CONTROLS
-	 let controls = new THREE.OrbitControls( camera, renderer.domElement );
+	 let controls = new THREE.OrbitControls( camera, renderer.domElement )
 
 	 // KEYBOARD
-	 let keyboard = new THREEx.KeyboardState();
+	 let keyboard = new THREEx.KeyboardState()
 
-	 let cube2 = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) );
-	 cube2.position.x = 1;
+	 let cube2 = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
+	 cube2.position.x = 1
 
 	 // ANIM LOOP
 	 const animate = () => {
-	     renderer.render(scene, camera);
-	 };
+	     renderer.render(scene, camera)
+	 }
 
 	 const update = () => {
-	     cube.rotation.x += 0.01;
-	     cube.rotation.y += 0.01;
-	     cube.rotation.z += 0.01;
+	     cube.rotation.x += 0.01
+	     cube.rotation.y += 0.01
+	     cube.rotation.z += 0.01
 
-	     if (keyboard.pressed("A")) {
-		 console.log("AAAAAAAAAAAAAAAAAAAAAA!");
-		 cube.add(cube2);
+	     const cranespeed = 0.3
+	     const armspeed = 3
+
+	     if (keyboard.pressed("J") && crane.position.z < track_length * track_size) {
+		 crane.position.z += cranespeed
 	     }
-	     if (keyboard.pressed("S")) {
-		 console.log("SSSSSSSSSSSSSSSSssssSSSSSs!");
-		 cube.remove(cube2);
+	     if (keyboard.pressed("L") && crane.position.z > 0) {
+		 crane.position.z -= cranespeed
 	     }
-	 };
+	     if (keyboard.pressed("A") && craneArm1.rotation.z < deg_to_rad(60)) {
+		 craneArm1.rotation.z += deg_to_rad(armspeed)
+	     }
+	     if (keyboard.pressed("D") && craneArm1.rotation.z > deg_to_rad(-60)) {
+		 craneArm1.rotation.z -= deg_to_rad(armspeed)
+	     }
+	     if (keyboard.pressed("W") && craneArm2.rotation.z < deg_to_rad(120)) {
+		 craneArm2.rotation.z += deg_to_rad(armspeed)
+	     }
+	     if (keyboard.pressed("S") && craneArm2.rotation.z > deg_to_rad(-120)) {
+		 craneArm2.rotation.z -= deg_to_rad(armspeed)
+	     }
+	     if (keyboard.pressed("Q")) {
+		 craneArm1.rotation.y += deg_to_rad(armspeed)
+	     }
+	     if (keyboard.pressed("E")) {
+		 craneArm1.rotation.y -= deg_to_rad(armspeed)
+	     }
+	 }
 
-	 let animLoop = new THREEx.RenderingLoop();
-	 let physLoop = new THREEx.PhysicsLoop(60);
+	 let animLoop = new THREEx.RenderingLoop()
+	 let physLoop = new THREEx.PhysicsLoop(60)
 
-	 animLoop.add(animate);
+	 animLoop.add(animate)
 
-	 physLoop.add(update);
+	 physLoop.add(update)
 	 
-	 animLoop.start();
-	 physLoop.start();
+	 animLoop.start()
+	 physLoop.start()
 	 
 
 	</script>
