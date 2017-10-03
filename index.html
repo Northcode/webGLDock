@@ -140,6 +140,7 @@
 	 craneP.then(m => {
 	     m.scale.set(1.2,1,1.2)
 	     m.position.set(0,0,0)
+	     m.receiveShadow = true
 	     crane = m
 
 	     let arm1 = new THREE.Mesh( new THREE.BoxGeometry (1,8,1),
@@ -181,7 +182,6 @@
 	     craneArm2.add(arrow)
 
 	     crane.add(craneArm1)
-	     crane.castShadow = true
 	     tracks.add(crane)
 	 })
 
@@ -234,6 +234,7 @@
 	 boatP.then(mesh => {
 	     mesh.position.set(35, -2, 0)
 	     mesh.scale.set(2,2,4)
+	     mesh.receiveShadow = true
 	     pickupableobjects.push(mesh)
 	     scene.add(mesh)
 	 })
@@ -242,6 +243,7 @@
 	 
 	 crateP.then(mesh => {
 	     mesh.scale.set(2,2,2)
+	     mesh.castShadow = true
 	     crateProto = mesh.clone()
 	     mesh.position.set(10,0,-15)
 
