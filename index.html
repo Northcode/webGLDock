@@ -241,8 +241,8 @@
 	 let crateProto = null
 	 
 	 crateP.then(mesh => {
-	     crateProto = mesh.clone()
 	     mesh.scale.set(2,2,2)
+	     crateProto = mesh.clone()
 	     mesh.position.set(10,0,-15)
 
 	     pickupableobjects.push(mesh)
@@ -265,16 +265,16 @@
 
 	     factory.position.set(-5,0,-35)
 	     factory.rotateY(deg_to_rad(-90))
-	     factory.scale.set(2,2,2)
+	     mesh.scale.set(2,2,2)
 
-	     crateSpawn.position.set(0,0,-4)
+	     crateSpawn.position.set(0,0,-6)
 
 	     let testCube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
 
 	     crateSpawn.rotateY(deg_to_rad(90))
 	     crateSpawn.add(testCube)
 
-	     crateLocation.position.set(0,0,-6)
+	     crateLocation.position.set(0,0,-30)
 
 	     factory.add(crateSpawn)
 	     factory.add(crateLocation)
@@ -312,6 +312,7 @@
 	 let dir = 1
 	 
 	 let newCrate = null
+	 let moveCrate = false
 	 
 	 const update = () => {
 	     cube.rotation.x += 0.01
@@ -328,8 +329,8 @@
 	     cube.scale.y += 0.05 * dir
 	     cube.scale.z += 0.05 * dir
 
-	     if (newCrate != null) {
-		 newCrate.position.lerp(new THREE.Vector3(3,0,0), 0.08)
+	     if (newCrate != null && moveCrate) {
+		 newCrate.position.lerp(new THREE.Vector3(8,0,0), 0.08)
 	     }
 	     // Update clock
 
@@ -370,6 +371,9 @@
 		 craneArm1.rotation.y -= deg_to_rad(armspeed)
 	     }
 	     if (keyboard.pressed("F")) {
+
+		 moveCrate = false
+		 
 		 let dirvec = craneGrab.getWorldPosition().sub(craneArm2.getWorldPosition()).normalize()
 		 let raycast = new THREE.Raycaster(craneGrab.getWorldPosition().clone(), dirvec)
 
@@ -403,11 +407,13 @@
 	     }
 	     if (keyboard.pressed("V")) {
 		 if (newCrate == null) {
-		     console.log(crateProto)
+
 		     newCrate = crateProto.clone()
+		     moveCrate = true
 
 		     crateSpawn.add(newCrate)
-		     console.log(newCrate)
+
+		     pickupableobjects.push(newCrate)
 		 }
 	     }
 	 }
