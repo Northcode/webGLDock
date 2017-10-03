@@ -14,9 +14,7 @@
 	<script src="lib/threex.loop.js"></script>
 	<script src="lib/OrbitControls.js"></script>
 	<script>
-	 'use strict'
-
-	 const shadowMapRes = 2096
+	 const shadowMapRes = 4096
 	 const deg_to_rad = (deg) => deg * (Math.PI / 180)
 
 	 // SCENE
@@ -25,7 +23,6 @@
 
 	 // CAMERA
 	 let camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 0.1, 1000 )
-
 
 	 // RENDERER
 	 let renderer = new THREE.WebGLRenderer()
@@ -60,7 +57,7 @@
 	 let ambient = new THREE.AmbientLight(0x404040)
 	 scene.add(ambient)
 
-
+	 
 	 let shadowHelper = new THREE.CameraHelper(light.shadow.camera)
 	 scene.add(shadowHelper)
 
@@ -68,7 +65,8 @@
 	 // CUBE
 	 let cube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
 	 cube.castShadow = true
-	 cube.position.set(8,3,0)
+	 cube.position.set(8,10,0)
+	 cube.scale.set(2,2,2)
 	 scene.add( cube )
 
 	 // OCEAN
@@ -76,9 +74,9 @@
 	 ocean.rotation.set(deg_to_rad(270),0,0)
 	 ocean.position.set(0,-2,0)
 	 scene.add(ocean)
-
 	 ocean.receiveShadow = true
 
+	 // DOCK
 	 let dock = new THREE.Mesh( new THREE.BoxBufferGeometry( 50, 1, 100 ), new THREE.MeshPhongMaterial( { color: 0xBA4E0E, specular: 0x999999, shininess: 1, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
 	 let dockSurface = new THREE.Object3D()
 	 dockSurface.position.set(0,0.5,0)
@@ -107,11 +105,13 @@
 	     }, (prog) => {}, (err) => reject(error))
 	 }
 
+	 // LOAD MODELS AND TEXTURES
 	 let tracksP = load_file("models/tracks.json",   "textures/TracksUVs.png")
 	 let craneP =  load_file("models/craneBase.json","textures/craneBaseUVs.png")
 	 let clockTowerP =  load_file("models/clockTower2.json","textures/clockTower2.png")
 	 let boatP =  load_file("models/boat.json","textures/boatUVs.png")
 	 let crateP =  load_file("models/crate.json","textures/crate.png")
+	 let house1P =  load_file("models/house1.json","textures/house1UVs.png")
 
 	 let tracks = new THREE.Object3D()
 	 const track_length = 7
@@ -184,11 +184,48 @@
 	     tracks.add(crane)
 	 })
 
+	 let hourHand = null
+	 let minuteHand = null
 
 	 clockTowerP.then(ct => {
-	     ct.geometry.computeBoundingBox()
 	     ct.position.set(10,0,10)
 	     ct.castShadow = true
+
+	     let clock = new THREE.Object3D()
+
+	     let hourPlane = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 0.5, 0.1 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ))
+
+	     let hourPivot = new THREE.Object3D()
+	     
+	     clock.position.set(2.7,18,0)
+	     hourPlane.rotateY(deg_to_rad(90))
+	     hourPlane.position.set(0,0,-0.3)
+	     
+	     hourPivot.rotateX(deg_to_rad(90))
+
+	     hourPivot.rotateX(deg_to_rad(-60))
+	     hourPivot.add(hourPlane)
+
+	     hourHand = hourPivot
+
+	     let minutePlane = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 0.9, 0.1 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ))
+
+	     let minutePivot = new THREE.Object3D()
+	     
+	     clock.position.set(2.7,18,0)
+	     minutePlane.rotateY(deg_to_rad(90))
+	     minutePlane.position.set(0,0,-0.3)
+	     
+	     minutePivot.rotateX(deg_to_rad(90))
+
+	     minutePivot.rotateX(deg_to_rad(0))
+	     minutePivot.add(minutePlane)
+
+	     minuteHand = minutePivot
+	     
+	     clock.add(hourPivot)
+	     clock.add(minutePivot)
+	     ct.add(clock)
 	     scene.add(ct)
 	 });
 
@@ -204,6 +241,12 @@
 	     mesh.position.set(10,0,-15)
 	     pickupableobjects.push(mesh)
 	     dockSurface.add(mesh)
+	 });
+
+	 house1P.then(mesh => {
+	     mesh.position.set(0,0,10)
+	     mesh.castShadow = true
+	     scene.add(mesh)
 	 });
 
 	 
@@ -232,11 +275,34 @@
 
 	 let collidableMeshList = []
 	 collidableMeshList.push(cube)
+
+	 let dir = 1
 	 
 	 const update = () => {
 	     cube.rotation.x += 0.01
 	     cube.rotation.y += 0.01
 	     cube.rotation.z += 0.01
+
+	     if (cube.scale.x > 3) {
+		 dir = -1
+	     } else if (cube.scale.x < 0.25) {
+		 dir = 1
+	     }
+
+	     cube.scale.x += 0.05 * dir
+	     cube.scale.y += 0.05 * dir
+	     cube.scale.z += 0.05 * dir
+
+	     // Update clock
+
+	     if (hourHand != null && minuteHand != null) {
+		 let timenow = new Date()
+		 hourHand.rotation.x = deg_to_rad(-(((timenow.getHours() % 12) / 12) * 360)
+						- ((timenow.getMinutes() / 60) * (360/12))
+						+ 90)
+		 minuteHand.rotation.x = deg_to_rad(-(((timenow.getMinutes() % 60) / 60) * 360)
+						  + 90)
+	     }
 
 	     const cranespeed = 0.3
 	     const armspeed = 1
@@ -270,13 +336,13 @@
 		 let raycast = new THREE.Raycaster(craneGrab.getWorldPosition().clone(), dirvec)
 
 
-		 let arrow = new THREE.ArrowHelper(raycast.ray.direction.normalize(), raycast.ray.origin, 3, 0xff0000)
+		 let arrow = new THREE.ArrowHelper(raycast.ray.direction.normalize(), raycast.ray.origin, 10, 0xff0000)
 		 scene.add(arrow)
 
 		 let intersects = raycast.intersectObjects(pickupableobjects)
 
 
-		 if (intersects.length > 0 && intersects[0].distance < 4) {
+		 if (intersects.length > 0 && intersects[0].distance < 10) {
 		     console.log("HIT")
 		     let obj = intersects[0].object
 		     obj.position.set(0,0,0)
