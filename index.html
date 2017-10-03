@@ -75,9 +75,22 @@
 
 	 let tracks = null;
 
-	 jloader.load("Tracks.json", (geometry, mats) => {
+	 const load_file => (model_f, tex_f) => {
+	     jloader.load(model_f, (geometry, mats) => {
+		 tracks = new THREE.Mesh(geometry, mats);
+		 texLoader.load(tex_f, (texture) => {
+		     tracks = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({map: texture, flatShading: true, shininess: 0, specular: 0x000, morphTargets: true, vertexColors: THREE.FaceColors }) );
+		     tracks.position.set(0,-5,0);
+		     /* tracks.castShadow = true;*/
+		     tracks.receiveShadow = true;
+		     scene.add(tracks);
+		 });
+	     });
+	 };
+
+	 jloader.load("tracks.json", (geometry, mats) => {
 	     tracks = new THREE.Mesh(geometry, mats);
-	     texLoader.load("TracksV2.png", (texture) => {
+	     texLoader.load("tracksTexture.png", (texture) => {
 		 tracks = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({map: texture, flatShading: true, shininess: 0, specular: 0x000, morphTargets: true, vertexColors: THREE.FaceColors }) );
 		 tracks.position.set(0,-5,0);
 		 /* tracks.castShadow = true;*/
@@ -96,6 +109,9 @@
 	 // ORBIT CONTROLS
 	 let controls = new THREE.OrbitControls( camera, renderer.domElement );
 
+	 // KEYBOARD
+	 let keyboard = new THREEx.KeyboardState();
+	 
 
 	 // ANIM LOOP
 	 const animate = () => {
@@ -104,9 +120,18 @@
 	     cube.rotation.x += 0.01;
 	     cube.rotation.y += 0.01;
 
-	     
+	     update();
 
 	     renderer.render(scene, camera);
+	 };
+
+	 const update = () => {
+	     if (keyboard.pressed("A")) {
+		 console.log("AAAAAAAAAAAAAAAAAAAAAA!");
+	     }
+	     if (keyboard.pressed("S")) {
+		 console.log("SSSSSSSSSSSSSSSSssssSSSSSs!");
+	     }
 	 };
 
 	 animate();
