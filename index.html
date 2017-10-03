@@ -9,10 +9,10 @@
     </head>
     
     <body>
-	<script src="three.js"></script>
-	<script src="threex.keyboardstate.js"></script>
-	<script src="threex.loop.js"></script>
-	<script src="OrbitControls.js"></script>
+	<script src="lib/three.js"></script>
+	<script src="lib/threex.keyboardstate.js"></script>
+	<script src="lib/threex.loop.js"></script>
+	<script src="lib/OrbitControls.js"></script>
 	<script>
 	 'use strict'
 
@@ -82,8 +82,8 @@
 	     }, (prog) => {}, (err) => reject(error))
 	 }
 
-	 let tracksP = load_file ("tracks.json", "TracksUVs.png")
-	 let craneP = load_file("craneBase.json","craneBaseUVs.png")
+	 let tracksP = load_file("models/tracks.json",   "textures/TracksUVs.png")
+	 let craneP =  load_file("models/craneBase.json","textures/craneBaseUVs.png")
 
 	 let tracks = new THREE.Object3D()
 	 const track_length = 7
