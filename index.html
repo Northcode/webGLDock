@@ -106,6 +106,7 @@
 	 let crane = null
 	 let craneArm1 = null
 	 let craneArm2 = null
+	 let craneGrab = new THREE.Object3D();
 
 	 craneP.then(m => {
 	     m.scale.set(1.2,1,1.2)
@@ -140,6 +141,13 @@
 	     craneArm1.add(joint)
 	     craneArm1.add(craneArm2)
 
+	     craneGrab.position.set(0,8,0)
+	     craneArm2.add(craneGrab)
+
+	     let dir = craneGrab.getWorldPosition().sub(craneArm2.getWorldPosition()).normalize()
+	     let arrow = new THREE.ArrowHelper(dir, craneGrab.position, 2, 0xeeeeee)
+
+	     craneArm2.add(arrow)
 
 	     crane.add(craneArm1)
 	     tracks.add(crane)
@@ -167,13 +175,18 @@
 	     renderer.render(scene, camera)
 	 }
 
+	 let arrow = null
+
+	 let collidableMeshList = []
+	 collidableMeshList.push(cube)
+	 
 	 const update = () => {
 	     cube.rotation.x += 0.01
 	     cube.rotation.y += 0.01
 	     cube.rotation.z += 0.01
 
 	     const cranespeed = 0.3
-	     const armspeed = 3
+	     const armspeed = 1
 
 	     if (keyboard.pressed("J") && crane.position.z < track_length * track_size) {
 		 crane.position.z += cranespeed
@@ -198,6 +211,38 @@
 	     }
 	     if (keyboard.pressed("E")) {
 		 craneArm1.rotation.y -= deg_to_rad(armspeed)
+	     }
+	     if (keyboard.pressed("F")) {
+		 let dirvec = craneGrab.getWorldPosition().sub(craneArm2.getWorldPosition()).normalize()
+		 let raycast = new THREE.Raycaster(craneGrab.getWorldPosition().clone(), dirvec)
+
+
+		 let arrow = new THREE.ArrowHelper(raycast.ray.direction.normalize(), raycast.ray.origin, 3, 0xff0000)
+		 scene.add(arrow)
+
+		 let intersects = raycast.intersectObjects(scene.children)
+
+
+		 if (intersects.length > 0 && intersects[0].distance < 4) {
+		     console.log("HIT")
+		     let obj = intersects[0].object
+		     obj.position.set(0,0,0)
+		     scene.remove(obj)
+		     craneGrab.add(obj)
+		 }
+	     }
+	     if (keyboard.pressed("G")) {
+		 if (craneGrab.children.length > 0) {
+		     let newpos = craneGrab.getWorldPosition().clone()
+
+		     let obj = craneGrab.children[0]
+		     craneGrab.remove(obj)
+		     console.log(newpos)
+		     scene.add(obj)
+		     obj.position.copy(newpos)
+		     /* obj.position.set(0,0,0)*/
+		     console.log(obj)
+		 }
 	     }
 	 }
 
