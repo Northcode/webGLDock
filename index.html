@@ -84,6 +84,7 @@
 
 	 let tracksP = load_file("models/tracks.json",   "textures/TracksUVs.png")
 	 let craneP =  load_file("models/craneBase.json","textures/craneBaseUVs.png")
+	 let clockTowerP =  load_file("models/clockTower2.json","textures/clockTower2.png")
 
 	 let tracks = new THREE.Object3D()
 	 const track_length = 7
@@ -152,6 +153,13 @@
 	     crane.add(craneArm1)
 	     tracks.add(crane)
 	 })
+
+
+	 clockTowerP.then(ct => {
+	     ct.geometry.computeBoundingBox()
+	     ct.position.set(10,(ct.geometry.boundingBox.max.y - ct.geometry.boundingBox.min.y) / 2,10)
+	     scene.add(ct)
+	 });
 
 	 
 	 // POSITION CAMERA
