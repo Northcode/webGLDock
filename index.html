@@ -74,7 +74,7 @@
 	 // OCEAN
 	 let ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 1000, 1000 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ))
 	 ocean.rotation.set(deg_to_rad(270),0,0)
-	 ocean.position.set(0,-5,0)
+	 ocean.position.set(0,-2,0)
 	 scene.add(ocean)
 
 	 ocean.receiveShadow = true
@@ -110,6 +110,7 @@
 	 let tracksP = load_file("models/tracks.json",   "textures/TracksUVs.png")
 	 let craneP =  load_file("models/craneBase.json","textures/craneBaseUVs.png")
 	 let clockTowerP =  load_file("models/clockTower2.json","textures/clockTower2.png")
+	 let boatP =  load_file("models/boat.json","textures/boatUVs.png")
 
 	 let tracks = new THREE.Object3D()
 	 const track_length = 7
@@ -189,6 +190,13 @@
 	     ct.castShadow = true
 	     scene.add(ct)
 	 });
+
+	 boatP.then(mesh => {
+	     mesh.position.set(35, -2, 0)
+	     mesh.scale.set(2,2,4)
+	     pickupableobjects.push(mesh)
+	     scene.add(mesh)
+	 })
 
 	 
 	 // POSITION CAMERA
