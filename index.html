@@ -111,6 +111,7 @@
 	 let craneP =  load_file("models/craneBase.json","textures/craneBaseUVs.png")
 	 let clockTowerP =  load_file("models/clockTower2.json","textures/clockTower2.png")
 	 let boatP =  load_file("models/boat.json","textures/boatUVs.png")
+	 let crateP =  load_file("models/crate.json","textures/crate.png")
 
 	 let tracks = new THREE.Object3D()
 	 const track_length = 7
@@ -197,6 +198,13 @@
 	     pickupableobjects.push(mesh)
 	     scene.add(mesh)
 	 })
+
+	 crateP.then(mesh => {
+	     mesh.scale.set(2,2,2)
+	     mesh.position.set(10,0,-15)
+	     pickupableobjects.push(mesh)
+	     dockSurface.add(mesh)
+	 });
 
 	 
 	 // POSITION CAMERA
