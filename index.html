@@ -74,8 +74,6 @@
 	 let texLoader = new THREE.TextureLoader();
 	 let jloader = new THREE.JSONLoader();
 
-	 let tracks = null;
-
 	 const load_file = (model_f, tex_f) => {
 	     return new Promise((resolve,reject) => {
 		 jloader.load(model_f, (geometry, mats) => {
@@ -90,18 +88,28 @@
 
 	 let tracksP = load_file ("tracks.json", "TracksUVs.png");
 
+	 let tracks = new THREE.Object3D();
+
 	 tracksP.then(t => {
-	     t.position.set(0,-5,0);
-	     t.receiveShadow = true;
+	     tracks.position.set(0,-5,0);
+	     tracks.receiveShadow = true;
 	     t.geometry.computeBoundingBox();
 	     let size = t.geometry.boundingBox.max.z - t.geometry.boundingBox.min.z
-	     cube.add(t);
+	     tracks.add(t);
 	     for (let i = 1; i < 5; i++) {
 		 let ex = t.clone();
 		 ex.position.z += size * i
-		 cube.add(ex);
+		 tracks.add(ex);
 	     }
+	     scene.add(tracks);
 	 });
+
+	 /* let craneP = load_file("craneBase.json","craneBaseUVs.png");
+
+	    craneP.then(m => {
+	    m.position.set(0,1,0);
+	    tracks.add(m);
+	    });*/
 	 
 	 // POSITION CAMERA
 	 camera.position.z = 5;
@@ -125,6 +133,10 @@
 	 };
 
 	 const update = () => {
+	     cube.rotation.x += 0.01;
+	     cube.rotation.y += 0.01;
+	     cube.rotation.z += 0.01;
+
 	     if (keyboard.pressed("A")) {
 		 console.log("AAAAAAAAAAAAAAAAAAAAAA!");
 		 cube.add(cube2);
