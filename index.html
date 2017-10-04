@@ -3,8 +3,8 @@
     <head>
 	<meta charset="utf-8">
 	<style>
-	    body { margin: 0 }
-	    canvas { width: 100% height: 100% }
+	 body { margin: 0 }
+	 canvas { width: 100% height: 100% }
 	</style>
     </head>
 
@@ -58,10 +58,6 @@
 	 scene.add(ambient)
 
 
-	 /* let shadowHelper = new THREE.CameraHelper(light.shadow.camera)
-	    scene.add(shadowHelper)
-	  */
-
 	 // CUBE
 	 let cube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
 	 cube.castShadow = true
@@ -71,8 +67,7 @@
 
 	 // OCEAN
 	 let ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 1000, 1000 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ))
-	 ocean.rotation.set(deg_to_rad(270),0,0)
-	 ocean.position.set(0,-2,0)
+
 	 scene.add(ocean)
 	 ocean.receiveShadow = true
 
@@ -112,23 +107,28 @@
 	 let boatP =  load_file("models/boat.json","textures/boatUVs.png")
 	 let crateP =  load_file("models/crate.json","textures/crate.png")
 	 let house1P =  load_file("models/house1.json","textures/house1UVs.png")
-   let house2P = load_file("models/house2.json","textures/house2.png")
-   let house3P = load_file("models/house3.json","textures/house3.png")
-   let block1P = load_file("models/block.json","textures/blockV1.png")
-   let block2P = load_file("models/block.json","textures/blockV2.png")
+	 let house2P = load_file("models/house2.json","textures/house2.png")
+	 let house3P = load_file("models/house3.json","textures/house3.png")
+	 let block1P = load_file("models/block.json","textures/blockV1.png")
+	 let block2P = load_file("models/block.json","textures/blockV2.png")
 	 let factoryP =  load_file("models/factory.json","textures/factory.png")
-   let hotelP = load_file("models/lBuilding.json","textures/lBuilding.png")
+	 let hotelP = load_file("models/lBuilding.json","textures/lBuilding.png")
 
+
+	 
 	 let tracks = new THREE.Object3D()
 	 const track_length = 7
 	 let track_size = 0
 
 	 tracksP.then(t => {
+
+	     
 	     tracks.position.set(20,0,-45)
 	     tracks.receiveShadow = true
 	     t.geometry.computeBoundingBox()
 	     track_size = t.geometry.boundingBox.max.z - t.geometry.boundingBox.min.z
 	     tracks.add(t)
+
 	     for (let i = 1; i <= track_length; i++) {
 		 let ex = t.clone()
 		 ex.position.z += track_size * i
@@ -148,6 +148,8 @@
 	     m.position.set(0,0,0)
 	     m.receiveShadow = true
 	     crane = m
+
+	     crane.userData.grabber = new THREE.Object3D()
 
 	     let arm1 = new THREE.Mesh( new THREE.BoxGeometry (1,8,1),
 					new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, shininess: 15, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true }))
@@ -232,7 +234,7 @@
 	     clock.add(hourPivot)
 	     clock.add(minutePivot)
 	     ct.add(clock)
-	 	 pickupableobjects.push(ct)
+	     pickupableobjects.push(ct)
 	     scene.add(ct)
 	 })
 
@@ -285,50 +287,50 @@
 	 })
 
 	 house1P.then(mesh => {
-       mesh.scale.set(1.5,1.5,1.5)
-       mesh.rotateY(deg_to_rad(-90))
+	     mesh.scale.set(1.5,1.5,1.5)
+	     mesh.rotateY(deg_to_rad(-90))
 	     mesh.position.set(12,0,40)
 	     mesh.castShadow = true
 	     scene.add(mesh)
 	 })
 
-   house2P.then(mesh => {
-       mesh.scale.set(2,2,2)
-       mesh.rotateY(deg_to_rad(90))
+	 house2P.then(mesh => {
+	     mesh.scale.set(2,2,2)
+	     mesh.rotateY(deg_to_rad(90))
 	     mesh.position.set(10,0,25)
 	     mesh.castShadow = true
 	     scene.add(mesh)
-   })
+	 })
 
-   house3P.then(mesh => {
-       mesh.rotateY(deg_to_rad(90))
-       mesh.position.set(-5,0,-20)
-       mesh.castShadow = true
-       scene.add(mesh)
-   })
+	 house3P.then(mesh => {
+	     mesh.rotateY(deg_to_rad(90))
+	     mesh.position.set(-5,0,-20)
+	     mesh.castShadow = true
+	     scene.add(mesh)
+	 })
 
-   block1P.then(mesh => {
-       mesh.scale.set(2,2,2)
-       mesh.rotateY(deg_to_rad(90))
-       mesh.position.set(-20,0,-10)
-       mesh.castShadow = true
-       scene.add(mesh)
-   })
+	 block1P.then(mesh => {
+	     mesh.scale.set(2,2,2)
+	     mesh.rotateY(deg_to_rad(90))
+	     mesh.position.set(-20,0,-10)
+	     mesh.castShadow = true
+	     scene.add(mesh)
+	 })
 
-   block2P.then(mesh => {
-       mesh.scale.set(3,3,3)
-       mesh.rotateY(deg_to_rad(180))
-       mesh.position.set(-10,0,40)
-       mesh.castShadow = true
-       scene.add(mesh)
-   })
+	 block2P.then(mesh => {
+	     mesh.scale.set(3,3,3)
+	     mesh.rotateY(deg_to_rad(180))
+	     mesh.position.set(-10,0,40)
+	     mesh.castShadow = true
+	     scene.add(mesh)
+	 })
 
-   hotelP.then(mesh => {
-       mesh.scale.set(3,3,3)
-       mesh.position.set(-10,0,20)
-       mesh.castShadow = true
-       scene.add(mesh)
-   })
+	 hotelP.then(mesh => {
+	     mesh.scale.set(3,3,3)
+	     mesh.position.set(-10,0,20)
+	     mesh.castShadow = true
+	     scene.add(mesh)
+	 })
 
 	 let factory = new THREE.Object3D()
 	 let crateSpawn = new THREE.Object3D()
@@ -388,9 +390,9 @@
 
 	 let newCrate = null
 	 let moveCrate = false
-   let moveBoat = false
-   let moveBoatBack = false
-   let boatTarget = null
+	 let moveBoat = false
+	 let moveBoatBack = false
+	 let boatTarget = null
 
 	 const update = () => {
 	     cube.rotation.x += 0.01
@@ -408,28 +410,28 @@
 	     cube.scale.z += 0.05 * dir
 
 	     if (newCrate != null && moveCrate) {
-		       newCrate.position.lerp(new THREE.Vector3(8,0,0), 0.08)
+		 newCrate.position.lerp(new THREE.Vector3(8,0,0), 0.08)
 	     }
 
-       if (moveBoat) {
-         boat.position.lerp(boatTarget, 0.004)
-        // boat.position.z -= 0.2
-         if (boat.position.z <= -70){
-           boat.position.z = 70
-           moveBoatBack = true
-           boatTarget = new THREE.Vector3(35, -2, -50);
-           boatCrates.forEach(c => c.material.transparent = true)
-         }
-         if (moveBoatBack) {
-           if (boat.position.z <= 20) {
-             boatTarget = new THREE.Vector3(35, -2, -15);
-           }
-           if (boat.position.z <= -10) {
-             moveBoat = false
-             moveBoatBack = false
-           }
-         }
-       }
+	     if (moveBoat) {
+		 boat.position.lerp(boatTarget, 0.004)
+		 // boat.position.z -= 0.2
+		 if (boat.position.z <= -70){
+		     boat.position.z = 70
+		     moveBoatBack = true
+		     boatTarget = new THREE.Vector3(35, -2, -50);
+		     boatCrates.forEach(c => c.material.transparent = true)
+		 }
+		 if (moveBoatBack) {
+		     if (boat.position.z <= 20) {
+			 boatTarget = new THREE.Vector3(35, -2, -15);
+		     }
+		     if (boat.position.z <= -10) {
+			 moveBoat = false
+			 moveBoatBack = false
+		     }
+		 }
+	     }
 
 	     // Update clock
 
@@ -469,9 +471,9 @@
 	     if (keyboard.pressed("E")) {
 		 craneArm1.rotation.y -= deg_to_rad(armspeed)
 	     }
-       if (keyboard.pressed("X")) {
-         resetBoat()
-       }
+	     if (keyboard.pressed("X")) {
+		 resetBoat()
+	     }
 	     if (keyboard.pressed("F")) {
 
 		 moveCrate = false
@@ -653,9 +655,9 @@
 			     let isAllFilled = boatCrates.reduce((b,o) => b && !o.material.transparent , true)
 			     console.log(isAllFilled)
 
-           if (isAllFilled) {
-             resetBoat()
-           }
+			     if (isAllFilled) {
+				 resetBoat()
+			     }
 
 			     return true
 			 }
@@ -677,10 +679,10 @@
 	     }
 	 }
 
-   const resetBoat =() => {
-     moveBoat = true
-     boatTarget = new THREE.Vector3(35, -2, -150)
-   }
+	 const resetBoat =() => {
+	     moveBoat = true
+	     boatTarget = new THREE.Vector3(35, -2, -150)
+	 }
 
 	 let animLoop = new THREEx.RenderingLoop()
 	 let physLoop = new THREEx.PhysicsLoop(60)
