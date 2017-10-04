@@ -606,13 +606,13 @@
 			     .forEach(a => scene.add(a))
 		     
 
-		     craneGrab.remove(obj)
 
 		     raycasts.some((r,idx,arr) => {
 			 let intersects = r.intersectObjects(boatCrates)
 			 if (intersects.length > 0) {
 			     intersects[0].object.material.transparent = false
 
+			     craneGrab.remove(obj)
 			     moveCrate = true
 			     crateSpawn.add(newCrate)
 
