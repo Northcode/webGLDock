@@ -235,12 +235,40 @@
 	     scene.add(ct)
 	 })
 
+	 let boatCrates = []
+	 let boatCrateProto = null
+	 let boat = new THREE.Object3D()
+	 
 	 boatP.then(mesh => {
-	     mesh.position.set(35, -2, 0)
+	     boat.position.set(35, -2, 0)
 	     mesh.scale.set(2,2,4)
 	     mesh.receiveShadow = true
+
+	     boat.add(mesh)
+
+	     crateP.then(crateMesh => {
+		 /* crateMesh.scale.set(2,2,2)*/
+		 boatCrateProto = crateMesh.clone()
+		 boatCrateProto.position.set(0,1,0)
+		 boatCrateProto.rotateY(deg_to_rad(90))
+
+		 boatCrates.push(boatCrateProto.clone())
+		 boatCrates.push(boatCrateProto.clone())
+		 boatCrates.push(boatCrateProto.clone())
+
+		 boatCrates[0].position.set(0,1,10)
+		 boatCrates[2].position.set(0,1,-10)
+
+		 boatCrates.forEach(c => {
+		     c.material = c.material.clone()
+		     c.material.transparent = true
+		     c.material.opacity = 0.3
+		     boat.add(c)
+		 })
+	     });
+	     
 	     pickupableobjects.push(mesh)
-	     scene.add(mesh)
+	     scene.add(boat)
 	 })
 
 	 let crateProto = null
