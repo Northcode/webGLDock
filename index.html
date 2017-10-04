@@ -32,60 +32,10 @@
 	 renderer.shadowMap.enabled = true
 	 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 	 renderer.shadowMap.renderReverseSided = false
-
 	 renderer.gammaInput = true
 	 renderer.gammaOutput = true
 
-	 // LIGHTING
-	 let light = new THREE.DirectionalLight(0xffffff, 1, 100)
-	 light.position.set(0,30,0)
-	 light.shadow.mapSize.width = shadowMapRes
-	 light.shadow.mapSize.height = shadowMapRes
-	 /* light.shadow.camera = new THREE.PerspectiveCamera( 45, 1000, 1000, 0.1, 1000)*/
-	 light.shadow.camera.left = -30
-	 light.shadow.camera.right = 80
-	 light.shadow.camera.top = 50
-	 light.shadow.camera.bottom = -50
-	 light.shadow.camera.near = 1
-	 light.shadow.camera.far = 50
-
-	 light.castShadow = true
-
-	 scene.add(light)
-
-	 // AMBIENT LIGHT
-	 let ambient = new THREE.AmbientLight(0x404040)
-	 scene.add(ambient)
-
-
-	 // CUBE
-	 let cube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
-	 cube.castShadow = true
-	 cube.position.set(8,10,0)
-	 cube.scale.set(2,2,2)
-	 scene.add( cube )
-
-	 // OCEAN
-	 let ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 1000, 1000 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ))
-
-	 scene.add(ocean)
-	 ocean.receiveShadow = true
-
-	 // DOCK
-	 let dock = new THREE.Mesh( new THREE.BoxBufferGeometry( 50, 1, 100 ), new THREE.MeshPhongMaterial( { color: 0xBA4E0E, specular: 0x999999, shininess: 1, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
-	 let dockSurface = new THREE.Object3D()
-	 dockSurface.position.set(0,0.5,0)
-	 dock.castShadow = false
-	 dock.receiveShadow = true
-	 dock.add(dockSurface)
-	 scene.add( dock )
-
-
-	 // INIT PICK UP-ABLE OBJECT LIST
-	 let pickupableobjects = []
-	 pickupableobjects.push(cube)
-
-
+	 // ------------------------- LOADER CODE --------------------
 	 let texLoader = new THREE.TextureLoader()
 	 let jloader = new THREE.JSONLoader()
 
@@ -100,7 +50,34 @@
 	     }, (prog) => {}, (err) => reject(error))
 	 }
 
-	 // LOAD MODELS AND TEXTURES
+
+	 // LIGHTING
+	 let light = new THREE.DirectionalLight(0xffffff, 1, 100)
+	 light.position.set(0,30,0)
+
+	 light.shadow.mapSize.width = shadowMapRes
+	 light.shadow.mapSize.height = shadowMapRes
+	 light.shadow.camera.left = -30
+	 light.shadow.camera.right = 80
+	 light.shadow.camera.top = 50
+	 light.shadow.camera.bottom = -50
+	 light.shadow.camera.near = 1
+	 light.shadow.camera.far = 50
+	 light.castShadow = true
+
+	 // AMBIENT LIGHT
+	 let ambient = new THREE.AmbientLight(0x404040)
+
+	 scene.add(light)
+	 scene.add(ambient)
+
+
+	 // INIT PICK UP-ABLE OBJECT LIST
+	 let pickupableobjects = []
+
+	 //
+	 // :::::::::::::::::::::::::::::: LOAD OBJECTS :::::::::::::::::::::::::::::
+	 //
 	 let tracksP = load_file("models/tracks.json",   "textures/TracksUVs.png")
 	 let craneP =  load_file("models/craneBase.json","textures/craneBaseUVs.png")
 	 let clockTowerP =  load_file("models/clockTower2.json","textures/clockTower2.png")
@@ -115,7 +92,49 @@
 	 let hotelP = load_file("models/lBuilding.json","textures/lBuilding.png")
 
 
-	 
+	 // CUBE
+	 let cube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ),
+				    new THREE.MeshPhongMaterial({
+					color: 0x00ff00,
+					specular: 0xffffff,
+					shininess: 20,
+					morphTargets: true,
+					vertexColors: THREE.FaceColors,
+					flatShading: true }))
+	 cube.position.set(8,10,0)
+	 cube.scale.set(2,2,2)
+	 cube.castShadow = true
+	 pickupableobjects.push(cube)
+	 scene.add(cube)
+
+	 // OCEAN
+	 let ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000, 10, 10),
+				    new THREE.MeshPhongMaterial({
+					color: 0x0000ff,
+					specular: 0x050505 }))
+	 ocean.rotation.set(deg_to_rad(270),0,0)
+	 ocean.position.set(0,-2,0)
+	 ocean.receiveShadow = true
+	 scene.add(ocean)
+
+	 // DOCK
+	 let dock = new THREE.Mesh( new THREE.BoxBufferGeometry(50, 1, 100),
+				    new THREE.MeshPhongMaterial({
+					color: 0xBA4E0E,
+					specular: 0x999999,
+					shininess: 1,
+					morphTargets: true,
+					vertexColors: THREE.FaceColors,
+					flatShading: true }))
+	 let dockSurface = new THREE.Object3D()
+	 dockSurface.position.set(0,0.5,0)
+	 dock.castShadow = false
+	 dock.receiveShadow = true
+	 dock.add(dockSurface)
+	 scene.add(dock)
+
+
+	 // TRACKS
 	 let tracks = new THREE.Object3D()
 	 const track_length = 7
 	 let track_size = 0
@@ -137,6 +156,9 @@
 	     dockSurface.add(tracks)
 	 })
 
+
+	 // CRANE
+
 	 let crane = null
 	 let craneArm1 = null
 	 let craneArm2 = null
@@ -151,8 +173,14 @@
 
 	     crane.userData.grabber = new THREE.Object3D()
 
-	     let arm1 = new THREE.Mesh( new THREE.BoxGeometry (1,8,1),
-					new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, shininess: 15, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true }))
+	     let arm1 = new THREE.Mesh(new THREE.BoxGeometry (1,8,1),
+				       new THREE.MeshPhongMaterial({
+					   color: 0xff0000,
+					   specular: 0xffffff,
+					   shininess: 15,
+					   morphTargets: true,
+					   vertexColors: THREE.FaceColors,
+					   flatShading: true }))
 
 	     let pivot1 = new THREE.Object3D()
 	     arm1.position.set(0,3.8,0)
@@ -161,11 +189,23 @@
 	     craneArm1 = pivot1
 	     arm1.castShadow = true
 
-	     let arm2 = new THREE.Mesh( new THREE.BoxGeometry (1,8,1),
-					new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 15, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true }))
+	     let arm2 = new THREE.Mesh(new THREE.BoxGeometry (1,8,1),
+				       new THREE.MeshPhongMaterial({
+					   color: 0x00ff00,
+					   specular: 0xffffff,
+					   shininess: 15,
+					   morphTargets: true,
+					   vertexColors: THREE.FaceColors,
+					   flatShading: true }))
 
-	     let joint = new THREE.Mesh( new THREE.CylinderGeometry(0.8,0.8,1.3,15),
-					 new THREE.MeshPhongMaterial( { color: 0x222222, specular: 0xffffff, shininess: 15, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true }))
+	     let joint = new THREE.Mesh(new THREE.CylinderGeometry(0.8,0.8,1.3,15),
+					new THREE.MeshPhongMaterial({
+					    color: 0x222222,
+					    specular: 0xffffff,
+					    shininess: 15,
+					    morphTargets: true,
+					    vertexColors: THREE.FaceColors,
+					    flatShading: true }))
 
 	     let pivot2 = new THREE.Object3D()
 	     arm2.position.set(0,3.8,0)
@@ -184,14 +224,12 @@
 	     craneGrab.position.set(0,8,0)
 	     craneArm2.add(craneGrab)
 
-	     let dir = craneGrab.getWorldPosition().sub(craneArm2.getWorldPosition()).normalize()
-
-	     /* craneArm2.add(arrow)
-	      */
 	     crane.add(craneArm1)
 	     tracks.add(crane)
 	 })
 
+
+	 // CLOCK
 	 let hourHand = null
 	 let minuteHand = null
 
@@ -201,7 +239,10 @@
 
 	     let clock = new THREE.Object3D()
 
-	     let hourPlane = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 0.5, 0.1 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ))
+	     let hourPlane = new THREE.Mesh(new THREE.PlaneBufferGeometry(0.5, 0.1 ,10, 10),
+					    new THREE.MeshPhongMaterial({
+						color: 0x0000ff,
+						specular: 0x050505}))
 
 	     let hourPivot = new THREE.Object3D()
 
@@ -216,7 +257,10 @@
 
 	     hourHand = hourPivot
 
-	     let minutePlane = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 0.9, 0.1 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ))
+	     let minutePlane = new THREE.Mesh(new THREE.PlaneBufferGeometry(0.9, 0.1, 10, 10),
+					      new THREE.MeshPhongMaterial({
+						  color: 0x0000ff,
+						  specular: 0x050505}))
 
 	     let minutePivot = new THREE.Object3D()
 
@@ -225,7 +269,6 @@
 	     minutePlane.position.set(0,0,-0.3)
 
 	     minutePivot.rotateX(deg_to_rad(90))
-
 	     minutePivot.rotateX(deg_to_rad(0))
 	     minutePivot.add(minutePlane)
 
@@ -237,6 +280,19 @@
 	     pickupableobjects.push(ct)
 	     scene.add(ct)
 	 })
+
+	 const update_clock = (time) => {
+	     if (hourHand != null && minuteHand != null) {
+		 hourHand.rotation.x = deg_to_rad(-(((time.getHours() % 12) / 12) * 360)
+						- ((time.getMinutes() / 60) * (360/12))
+						+ 90)
+		 minuteHand.rotation.x = deg_to_rad(-(((time.getMinutes() % 60) / 60) * 360)
+						  + 90)
+	     }
+	 }
+
+
+	 // BOAT
 
 	 let boatCrates = []
 	 let boatCrateProto = null
@@ -250,7 +306,6 @@
 	     boat.add(mesh)
 
 	     crateP.then(crateMesh => {
-		 /* crateMesh.scale.set(2,2,2)*/
 		 boatCrateProto = crateMesh.clone()
 		 boatCrateProto.position.set(0,1,0)
 		 boatCrateProto.rotateY(deg_to_rad(90))
@@ -274,6 +329,9 @@
 	     scene.add(boat)
 	 })
 
+
+	 // CRATE
+
 	 let crateProto = null
 
 	 crateP.then(mesh => {
@@ -285,6 +343,11 @@
 	     pickupableobjects.push(mesh)
 	     dockSurface.add(mesh)
 	 })
+
+	 const get_crate = () => (crateProto != null) ? crateProto.clone() : null
+
+
+	 // ::::::::::::::: HOUSES ::::::::::::::::::::
 
 	 house1P.then(mesh => {
 	     mesh.scale.set(1.5,1.5,1.5)
@@ -332,6 +395,12 @@
 	     scene.add(mesh)
 	 })
 
+
+
+
+
+	 // ::::::::::::::::::::::: FACTORY ::::::::::::::::::::::::::
+
 	 let factory = new THREE.Object3D()
 	 let crateSpawn = new THREE.Object3D()
 	 let crateLocation = new THREE.Object3D()
@@ -346,7 +415,14 @@
 
 	     crateSpawn.position.set(0,0,-6)
 
-	     let testCube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
+	     let testCube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1),
+					   new THREE.MeshPhongMaterial({
+					       color: 0x00ff00,
+					       specular: 0xffffff,
+					       shininess: 20,
+					       morphTargets: true,
+					       vertexColors: THREE.FaceColors,
+					       flatShading: true }))
 
 	     crateSpawn.rotateY(deg_to_rad(90))
 	     crateSpawn.add(testCube)
@@ -363,30 +439,26 @@
 	 // POSITION CAMERA
 	 camera.position.x = 60
 	 camera.position.y = 30
-
 	 camera.lookAt(cube.position)
 
 
 	 // ORBIT CONTROLS
-	 let controls = new THREE.OrbitControls( camera, renderer.domElement )
+	 // let controls = new THREE.OrbitControls( camera, renderer.domElement ) 
 
 	 // KEYBOARD
 	 let keyboard = new THREEx.KeyboardState()
 
-	 let cube2 = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
-	 cube2.position.x = 1
 
 	 // ANIM LOOP
 	 const animate = () => {
 	     renderer.render(scene, camera)
 	 }
 
-	 let arrow = null
 
 	 let collidableMeshList = []
 	 collidableMeshList.push(cube)
 
-	 let dir = 1
+	 let cubeScaleDir = 1
 
 	 let newCrate = null
 	 let moveCrate = false
@@ -394,20 +466,23 @@
 	 let moveBoatBack = false
 	 let boatTarget = null
 
+
+	 // ::::::::::::::::: UPDATE LOOP ::::::::::::::::::
+
 	 const update = () => {
 	     cube.rotation.x += 0.01
 	     cube.rotation.y += 0.01
 	     cube.rotation.z += 0.01
+	     cube.scale.x += 0.05 * cubeScaleDir
+	     cube.scale.y += 0.05 * cubeScaleDir
+	     cube.scale.z += 0.05 * cubeScaleDir
 
 	     if (cube.scale.x > 3) {
-		 dir = -1
+		 cubeScaleDir = -1
 	     } else if (cube.scale.x < 0.25) {
-		 dir = 1
+		 cubeScaleDir = 1
 	     }
 
-	     cube.scale.x += 0.05 * dir
-	     cube.scale.y += 0.05 * dir
-	     cube.scale.z += 0.05 * dir
 
 	     if (newCrate != null && moveCrate) {
 		 newCrate.position.lerp(new THREE.Vector3(8,0,0), 0.08)
@@ -415,13 +490,14 @@
 
 	     if (moveBoat) {
 		 boat.position.lerp(boatTarget, 0.004)
-		 // boat.position.z -= 0.2
+
 		 if (boat.position.z <= -70){
 		     boat.position.z = 70
 		     moveBoatBack = true
 		     boatTarget = new THREE.Vector3(35, -2, -50);
 		     boatCrates.forEach(c => c.material.transparent = true)
 		 }
+
 		 if (moveBoatBack) {
 		     if (boat.position.z <= 20) {
 			 boatTarget = new THREE.Vector3(35, -2, -15);
@@ -433,20 +509,26 @@
 		 }
 	     }
 
-	     // Update clock
+	     // Spawn a new crate is there is none
+	     if (newCrate == null) {
+		 newCrate = get_crate()
+		 if (newCrate != null) {
+		     moveCrate = true
 
-	     if (hourHand != null && minuteHand != null) {
-		 let timenow = new Date()
-		 hourHand.rotation.x = deg_to_rad(-(((timenow.getHours() % 12) / 12) * 360)
-						- ((timenow.getMinutes() / 60) * (360/12))
-						+ 90)
-		 minuteHand.rotation.x = deg_to_rad(-(((timenow.getMinutes() % 60) / 60) * 360)
-						  + 90)
+		     crateSpawn.add(newCrate)
+
+		     pickupableobjects.push(newCrate)
+		 }
 	     }
+
+	     // Update clock
+	     update_clock(new Date())
+
 
 	     const cranespeed = 0.3
 	     const armspeed = 1
 
+	     // ::::::::::: CRANE MOVEMENT
 	     if (keyboard.pressed("J") && crane.position.z < track_length * track_size) {
 		 crane.position.z += cranespeed
 	     }
@@ -471,179 +553,30 @@
 	     if (keyboard.pressed("E")) {
 		 craneArm1.rotation.y -= deg_to_rad(armspeed)
 	     }
-	     if (keyboard.pressed("X")) {
-		 resetBoat()
-	     }
-	     if (keyboard.pressed("F")) {
 
+	     // :::::::::: CRATE ACTIONS 
+	     if (keyboard.pressed("F")) {
 		 moveCrate = false
 
 		 let dirvec = craneGrab.getWorldPosition().sub(craneArm2.getWorldPosition()).normalize()
 		 let raycast = new THREE.Raycaster(craneGrab.getWorldPosition().clone(), dirvec)
-
-
-		 /* let arrow = new THREE.ArrowHelper(raycast.ray.direction.normalize(), raycast.ray.origin, 10, 0xff0000)
-		    scene.add(arrow)
-		  */
-
 		 let intersects = raycast.intersectObjects(pickupableobjects)
 
-
 		 if (intersects.length > 0 && intersects[0].distance < 10 && craneGrab.children.length == 0) {
-		     console.log("HIT")
 		     let obj = intersects[0].object
 		     obj.position.set(0,0,0)
+
 		     scene.remove(obj)
 		     craneGrab.add(obj)
 		 }
 	     }
 	     if (keyboard.pressed("G")) {
 		 if (craneGrab.children.length > 0) {
-		     let newpos = craneGrab.getWorldPosition().clone()
 
 		     let obj = craneGrab.children[0]
 
-		     obj.geometry.computeBoundingBox()
-		     let box = obj.geometry.boundingBox
-
-		     let vecs = []
-
-		     let wscale = obj.getWorldScale()
-		     let oorigin = obj.getWorldPosition()
-
-		     const draw_vec = (vec) => {
-			 let arr = new THREE.ArrowHelper(vec.clone().normalize(), new THREE.Vector3(0,0,0), vec.length(), 0x00ff00)
-			 scene.add(arr)
-		     }
-
-		     let vmax = oorigin.clone().add(box.max.clone().multiply(wscale))
-		     let vmin = oorigin.clone().add(box.min.clone().multiply(wscale))
-
-		     let wrldrot = obj.matrixWorld
-
-		     let TRF = new THREE.Vector3()
-		     TRF.y += box.max.y
-		     TRF.z += box.max.z
-		     TRF.x += box.max.x
-		     TRF.applyMatrix4(wrldrot)
-
-		     let TLF = new THREE.Vector3()
-		     TLF.y += box.max.y
-		     TLF.z += box.min.z
-		     TLF.x += box.max.x
-		     TLF.applyMatrix4(wrldrot)
-
-		     let TRB = new THREE.Vector3()
-		     TRB.y += box.max.y
-		     TRB.z += box.max.z
-		     TRB.x += box.min.x
-		     TRB.applyMatrix4(wrldrot)
-
-		     let TLB = new THREE.Vector3()
-		     TLB.y += box.max.y
-		     TLB.z += box.min.z
-		     TLB.x += box.min.x
-		     TLB.applyMatrix4(wrldrot)
-
-		     let BRF = new THREE.Vector3()
-		     BRF.y += box.min.y
-		     BRF.z += box.max.z
-		     BRF.x += box.max.x
-		     BRF.applyMatrix4(wrldrot)
-
-		     let BLF = new THREE.Vector3()
-		     BLF.y += box.min.y
-		     BLF.z += box.min.z
-		     BLF.x += box.max.x
-		     BLF.applyMatrix4(wrldrot)
-
-		     let BRB = new THREE.Vector3()
-		     BRB.y += box.min.y
-		     BRB.z += box.max.z
-		     BRB.x += box.min.x
-		     BRB.applyMatrix4(wrldrot)
-
-		     let BLB = new THREE.Vector3()
-		     BLB.y += box.min.y
-		     BLB.z += box.min.z
-		     BLB.x += box.min.x
-		     BLB.applyMatrix4(wrldrot)
-
-
-		     /* draw_vec(TRF)
-			draw_vec(TLF)
-			draw_vec(TRB)
-			draw_vec(TLB)
-			draw_vec(BRF)
-			draw_vec(BLF)
-			draw_vec(BRB)
-			draw_vec(BLB)
-		      */
-		     let TRBtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,TRB)
-		     let TLFtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,TLF)
-		     let BRFtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,BRF)
-
-		     let BRFtBLF = new THREE.Vector3(0,0,0).subVectors(BLF,BRF)
-		     let BLBtBLF = new THREE.Vector3(0,0,0).subVectors(BLF,BLB)
-		     let TLFtBLF = new THREE.Vector3(0,0,0).subVectors(BLF,TLF)
-
-		     let BRFtBRB = new THREE.Vector3(0,0,0).subVectors(BRB,BRF)
-		     let BLBtBRB = new THREE.Vector3(0,0,0).subVectors(BRB,BLB)
-		     let TRBtBRB = new THREE.Vector3(0,0,0).subVectors(BRB,TRB)
-
-		     let TLFtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,TLF)
-		     let TRBtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,TRB)
-		     let BLBtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,BLB)
-
-		     /* draw_vec(TRBtTRF)
-			draw_vec(TLFtTRF)
-			draw_vec(BRFtTRF)
-
-			draw_vec(BRFtBLF)
-			draw_vec(BLBtBLF)
-			draw_vec(TLFtBLF)
-
-			draw_vec(BRFtBRB)
-			draw_vec(BLBtBRB)
-			draw_vec(TRBtBRB)
-
-			draw_vec(TLFtTLB)
-			draw_vec(TRBtTLB)
-			draw_vec(BLBtTLB)
-		      */
-
-		     let rTRBtTRF = new THREE.Raycaster(TRB, TRBtTRF.clone().normalize(),0,TRBtTRF.length())
-		     let rTLFtTRF = new THREE.Raycaster(TLF, TLFtTRF.clone().normalize(),0,TLFtTRF.length())
-		     let rBRFtTRF = new THREE.Raycaster(BRF, BRFtTRF.clone().normalize(),0,BRFtTRF.length())
-		     let rBRFtBLF = new THREE.Raycaster(BRF, BRFtBLF.clone().normalize(),0,BRFtBLF.length())
-		     let rBLBtBLF = new THREE.Raycaster(BLB, BLBtBLF.clone().normalize(),0,BLBtBLF.length())
-		     let rTLFtBLF = new THREE.Raycaster(TLF, TLFtBLF.clone().normalize(),0,TLFtBLF.length())
-		     let rBRFtBRB = new THREE.Raycaster(BRF, BRFtBRB.clone().normalize(),0,BRFtBRB.length())
-		     let rBLBtBRB = new THREE.Raycaster(BLB, BLBtBRB.clone().normalize(),0,BLBtBRB.length())
-		     let rTRBtBRB = new THREE.Raycaster(TRB, TRBtBRB.clone().normalize(),0,TRBtBRB.length())
-		     let rTLFtTLB = new THREE.Raycaster(TLF, TLFtTLB.clone().normalize(),0,TLFtTLB.length())
-		     let rTRBtTLB = new THREE.Raycaster(TRB, TRBtTLB.clone().normalize(),0,TRBtTLB.length())
-		     let rBLBtTLB = new THREE.Raycaster(BLB, BLBtTLB.clone().normalize(),0,BLBtTLB.length())
-
-		     let raycasts = []
-
-		     raycasts.push(rTRBtTRF)
-		     raycasts.push(rTLFtTRF)
-		     raycasts.push(rBRFtTRF)
-		     raycasts.push(rBRFtBLF)
-		     raycasts.push(rBLBtBLF)
-		     raycasts.push(rTLFtBLF)
-		     raycasts.push(rBRFtBRB)
-		     raycasts.push(rBLBtBRB)
-		     raycasts.push(rTRBtBRB)
-		     raycasts.push(rTLFtTLB)
-		     raycasts.push(rTRBtTLB)
-		     raycasts.push(rBLBtTLB)
-
-		     /* raycasts.map(r => new THREE.ArrowHelper(r.ray.direction.normalize(), r.ray.origin, r.far, 0xff0000)) .forEach(a => scene.add(a))*/
-		     
-
-		     raycasts.some((r,idx,arr) => {
+		     //::::::::::: Actually check for intersects 
+		     bounding_raycasts(obj).some((r,idx,arr) => {
 			 let intersects = r.intersectObjects(boatCrates)
 			 if (intersects.length > 0) {
 			     intersects[0].object.material.transparent = false
@@ -653,28 +586,14 @@
 			     crateSpawn.add(newCrate)
 
 			     let isAllFilled = boatCrates.reduce((b,o) => b && !o.material.transparent , true)
-			     console.log(isAllFilled)
 
 			     if (isAllFilled) {
 				 resetBoat()
 			     }
-
 			     return true
 			 }
 			 return false
 		     })
-
-		 }
-	     }
-	     if (keyboard.pressed("V")) {
-		 if (newCrate == null) {
-
-		     newCrate = crateProto.clone()
-		     moveCrate = true
-
-		     crateSpawn.add(newCrate)
-
-		     pickupableobjects.push(newCrate)
 		 }
 	     }
 	 }
@@ -684,11 +603,86 @@
 	     boatTarget = new THREE.Vector3(35, -2, -150)
 	 }
 
+	 const draw_vec = (vec) => {
+	     let arr = new THREE.ArrowHelper(vec.clone().normalize(),
+					     new THREE.Vector3(0,0,0),
+					     vec.length(),
+					     0x00ff00)
+	     scene.add(arr)
+	 }
+
+	 const bounding_raycasts = (object) => {
+	     object.geometry.computeBoundingBox()
+	     let bounds = object.geometry.boundingBox
+	     let origin = object.getWorldPosition()
+	     let world_matrix = object.matrixWorld
+
+	     let TRF = new THREE.Vector3(bounds.max.x,bounds.max.y,bounds.max.z) 
+	     TRF.applyMatrix4(world_matrix)
+
+	     let TLF = new THREE.Vector3(bounds.max.x,bounds.max.y,bounds.min.z)
+	     TLF.applyMatrix4(world_matrix)
+
+	     let TRB = new THREE.Vector3(bounds.min.x,bounds.max.y,bounds.max.z) 
+	     TRB.applyMatrix4(world_matrix)
+
+	     let TLB = new THREE.Vector3(bounds.min.x,bounds.max.y,bounds.min.z) 
+	     TLB.applyMatrix4(world_matrix)
+
+	     let BRF = new THREE.Vector3(bounds.max.x,bounds.min.y,bounds.max.z) 
+	     BRF.applyMatrix4(world_matrix)
+
+	     let BLF = new THREE.Vector3(bounds.max.x,bounds.min.y,bounds.min.z) 
+	     BLF.applyMatrix4(world_matrix)
+
+	     let BRB = new THREE.Vector3(bounds.min.x,bounds.min.y,bounds.max.z) 
+	     BRB.applyMatrix4(world_matrix)
+	     
+	     let BLB = new THREE.Vector3(bounds.min.x,bounds.min.y,bounds.min.z) 
+	     BLB.applyMatrix4(world_matrix)
+
+	     // ::::::::::::: ALL SIDES ::::::::::::
+	     let TRBtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,TRB)
+	     let TLFtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,TLF)
+	     let BRFtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,BRF)
+
+	     let BRFtBLF = new THREE.Vector3(0,0,0).subVectors(BLF,BRF)
+	     let BLBtBLF = new THREE.Vector3(0,0,0).subVectors(BLF,BLB)
+	     let TLFtBLF = new THREE.Vector3(0,0,0).subVectors(BLF,TLF)
+
+	     let BRFtBRB = new THREE.Vector3(0,0,0).subVectors(BRB,BRF)
+	     let BLBtBRB = new THREE.Vector3(0,0,0).subVectors(BRB,BLB)
+	     let TRBtBRB = new THREE.Vector3(0,0,0).subVectors(BRB,TRB)
+
+	     let TLFtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,TLF)
+	     let TRBtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,TRB)
+	     let BLBtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,BLB)
+
+
+	     // :::::::::::: RAYS ::::::::::::::::::::::::::::::
+	     let raycasts = []
+
+	     raycasts.push(new THREE.Raycaster(TRB, TRBtTRF.clone().normalize(),0,TRBtTRF.length()))
+	     raycasts.push(new THREE.Raycaster(TLF, TLFtTRF.clone().normalize(),0,TLFtTRF.length()))
+	     raycasts.push(new THREE.Raycaster(BRF, BRFtTRF.clone().normalize(),0,BRFtTRF.length()))
+	     raycasts.push(new THREE.Raycaster(BRF, BRFtBLF.clone().normalize(),0,BRFtBLF.length()))
+	     raycasts.push(new THREE.Raycaster(BLB, BLBtBLF.clone().normalize(),0,BLBtBLF.length()))
+	     raycasts.push(new THREE.Raycaster(TLF, TLFtBLF.clone().normalize(),0,TLFtBLF.length()))
+	     raycasts.push(new THREE.Raycaster(BRF, BRFtBRB.clone().normalize(),0,BRFtBRB.length()))
+	     raycasts.push(new THREE.Raycaster(BLB, BLBtBRB.clone().normalize(),0,BLBtBRB.length()))
+	     raycasts.push(new THREE.Raycaster(TRB, TRBtBRB.clone().normalize(),0,TRBtBRB.length()))
+	     raycasts.push(new THREE.Raycaster(TLF, TLFtTLB.clone().normalize(),0,TLFtTLB.length()))
+	     raycasts.push(new THREE.Raycaster(TRB, TRBtTLB.clone().normalize(),0,TRBtTLB.length()))
+	     raycasts.push(new THREE.Raycaster(BLB, BLBtTLB.clone().normalize(),0,BLBtTLB.length()))
+
+	     return raycasts
+
+	 }
+
 	 let animLoop = new THREEx.RenderingLoop()
 	 let physLoop = new THREEx.PhysicsLoop(60)
 
 	 animLoop.add(animate)
-
 	 physLoop.add(update)
 
 	 animLoop.start()
