@@ -58,9 +58,9 @@
 	 scene.add(ambient)
 
 
-	 let shadowHelper = new THREE.CameraHelper(light.shadow.camera)
-	 scene.add(shadowHelper)
-
+	 /* let shadowHelper = new THREE.CameraHelper(light.shadow.camera)
+	    scene.add(shadowHelper)
+	  */
 
 	 // CUBE
 	 let cube = new THREE.Mesh( new THREE.BoxGeometry( 1, 1, 1 ), new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true } ) )
@@ -183,10 +183,9 @@
 	     craneArm2.add(craneGrab)
 
 	     let dir = craneGrab.getWorldPosition().sub(craneArm2.getWorldPosition()).normalize()
-	     let arrow = new THREE.ArrowHelper(dir, craneGrab.position, 2, 0xeeeeee)
 
-	     craneArm2.add(arrow)
-
+	     /* craneArm2.add(arrow)
+	      */
 	     crane.add(craneArm1)
 	     tracks.add(crane)
 	 })
@@ -481,8 +480,9 @@
 		 let raycast = new THREE.Raycaster(craneGrab.getWorldPosition().clone(), dirvec)
 
 
-		 let arrow = new THREE.ArrowHelper(raycast.ray.direction.normalize(), raycast.ray.origin, 10, 0xff0000)
-		 scene.add(arrow)
+		 /* let arrow = new THREE.ArrowHelper(raycast.ray.direction.normalize(), raycast.ray.origin, 10, 0xff0000)
+		    scene.add(arrow)
+		  */
 
 		 let intersects = raycast.intersectObjects(pickupableobjects)
 
@@ -638,10 +638,8 @@
 		     raycasts.push(rTRBtTLB)
 		     raycasts.push(rBLBtTLB)
 
-		     raycasts.map(r => new THREE.ArrowHelper(r.ray.direction.normalize(), r.ray.origin, r.far, 0xff0000))
-			     .forEach(a => scene.add(a))
-
-
+		     /* raycasts.map(r => new THREE.ArrowHelper(r.ray.direction.normalize(), r.ray.origin, r.far, 0xff0000)) .forEach(a => scene.add(a))*/
+		     
 
 		     raycasts.some((r,idx,arr) => {
 			 let intersects = r.intersectObjects(boatCrates)
