@@ -491,56 +491,67 @@
 		     let vmax = oorigin.clone().add(box.max.clone().multiply(wscale))
 		     let vmin = oorigin.clone().add(box.min.clone().multiply(wscale))
 
-		     let TRF = oorigin.clone()
-		     TRF.y += box.max.y * wscale.y
-		     TRF.z += box.max.z * wscale.z
-		     TRF.x += box.max.x * wscale.x
 
-		     let TLF = oorigin.clone()
-		     TLF.y += box.max.y * wscale.y
-		     TLF.z += box.min.z * wscale.z
-		     TLF.x += box.max.x * wscale.x
+		     let wrldrot = obj.matrixWorld
 
-		     let TRB = oorigin.clone()
-		     TRB.y += box.max.y * wscale.y
-		     TRB.z += box.max.z * wscale.z
-		     TRB.x += box.min.x * wscale.x
+		     let TRF = new THREE.Vector3()
+		     TRF.y += box.max.y 
+		     TRF.z += box.max.z 
+		     TRF.x += box.max.x 
+		     TRF.applyMatrix4(wrldrot)
 
-		     let TLB = oorigin.clone()
-		     TLB.y += box.max.y * wscale.y
-		     TLB.z += box.min.z * wscale.z
-		     TLB.x += box.min.x * wscale.x
+		     let TLF = new THREE.Vector3()
+		     TLF.y += box.max.y 
+		     TLF.z += box.min.z 
+		     TLF.x += box.max.x 
+		     TLF.applyMatrix4(wrldrot)
 
-		     let BRF = oorigin.clone()
-		     BRF.y += box.min.y * wscale.y
-		     BRF.z += box.max.z * wscale.z
-		     BRF.x += box.max.x * wscale.x
+		     let TRB = new THREE.Vector3()
+		     TRB.y += box.max.y 
+		     TRB.z += box.max.z 
+		     TRB.x += box.min.x 
+		     TRB.applyMatrix4(wrldrot)
 
-		     let BLF = oorigin.clone()
-		     BLF.y += box.min.y * wscale.y
-		     BLF.z += box.min.z * wscale.z
-		     BLF.x += box.max.x * wscale.x
+		     let TLB = new THREE.Vector3()
+		     TLB.y += box.max.y 
+		     TLB.z += box.min.z 
+		     TLB.x += box.min.x 
+		     TLB.applyMatrix4(wrldrot)
 
-		     let BRB = oorigin.clone()
-		     BRB.y += box.min.y * wscale.y
-		     BRB.z += box.max.z * wscale.z
-		     BRB.x += box.min.x * wscale.x
+		     let BRF = new THREE.Vector3()
+		     BRF.y += box.min.y 
+		     BRF.z += box.max.z 
+		     BRF.x += box.max.x 
+		     BRF.applyMatrix4(wrldrot)
 
-		     let BLB = oorigin.clone()
-		     BLB.y += box.min.y * wscale.y
-		     BLB.z += box.min.z * wscale.z
-		     BLB.x += box.min.x * wscale.x
+		     let BLF = new THREE.Vector3()
+		     BLF.y += box.min.y 
+		     BLF.z += box.min.z 
+		     BLF.x += box.max.x 
+		     BLF.applyMatrix4(wrldrot)
+
+		     let BRB = new THREE.Vector3()
+		     BRB.y += box.min.y 
+		     BRB.z += box.max.z 
+		     BRB.x += box.min.x 
+		     BRB.applyMatrix4(wrldrot)
+
+		     let BLB = new THREE.Vector3()
+		     BLB.y += box.min.y 
+		     BLB.z += box.min.z 
+		     BLB.x += box.min.x 
+		     BLB.applyMatrix4(wrldrot)
 
 
-		     draw_vec(TRF)
-		     draw_vec(TLF)
-		     draw_vec(TRB)
-		     draw_vec(TLB)
-		     draw_vec(BRF)
-		     draw_vec(BLF)
-		     draw_vec(BRB)
-		     draw_vec(BLB)
-
+		     /* draw_vec(TRF)
+			draw_vec(TLF)
+			draw_vec(TRB)
+			draw_vec(TLB)
+			draw_vec(BRF)
+			draw_vec(BLF)
+			draw_vec(BRB)
+			draw_vec(BLB)
+		      */
 		     let TRBtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,TRB)
 		     let TLFtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,TLF)
 		     let BRFtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,BRF)
@@ -557,22 +568,22 @@
 		     let TRBtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,TRB)
 		     let BLBtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,BLB)
 
-		     draw_vec(TRBtTRF)
-		     draw_vec(TLFtTRF)
-		     draw_vec(BRFtTRF)
+		     /* draw_vec(TRBtTRF)
+			draw_vec(TLFtTRF)
+			draw_vec(BRFtTRF)
 
-		     draw_vec(BRFtBLF)
-		     draw_vec(BLBtBLF)
-		     draw_vec(TLFtBLF)
+			draw_vec(BRFtBLF)
+			draw_vec(BLBtBLF)
+			draw_vec(TLFtBLF)
 
-		     draw_vec(BRFtBRB)
-		     draw_vec(BLBtBRB)
-		     draw_vec(TRBtBRB)
+			draw_vec(BRFtBRB)
+			draw_vec(BLBtBRB)
+			draw_vec(TRBtBRB)
 
-		     draw_vec(TLFtTLB)
-		     draw_vec(TRBtTLB)
-		     draw_vec(BLBtTLB)
-
+			draw_vec(TLFtTLB)
+			draw_vec(TRBtTLB)
+			draw_vec(BLBtTLB)
+		      */
 
 		     let rTRBtTRF = new THREE.Raycaster(TRB, TRBtTRF.clone().normalize(),0,TRBtTRF.length())
 		     let rTLFtTRF = new THREE.Raycaster(TLF, TLFtTRF.clone().normalize(),0,TLFtTRF.length())
