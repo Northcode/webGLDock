@@ -117,6 +117,7 @@
    let block1P = load_file("models/block.json","textures/blockV1.png")
    let block2P = load_file("models/block.json","textures/blockV2.png")
 	 let factoryP =  load_file("models/factory.json","textures/factory.png")
+   let hotelP = load_file("models/lBuilding.json","textures/lBuilding.png")
 
 	 let tracks = new THREE.Object3D()
 	 const track_length = 7
@@ -238,7 +239,7 @@
 	 let boatCrates = []
 	 let boatCrateProto = null
 	 let boat = new THREE.Object3D()
-	 
+
 	 boatP.then(mesh => {
 	     boat.position.set(35, -2, 0)
 	     mesh.scale.set(2,2,4)
@@ -266,7 +267,7 @@
 		     boat.add(c)
 		 })
 	     });
-	     
+
 	     pickupableobjects.push(mesh)
 	     scene.add(boat)
 	 })
@@ -318,6 +319,13 @@
        mesh.scale.set(3,3,3)
        mesh.rotateY(deg_to_rad(180))
        mesh.position.set(-10,0,40)
+       mesh.castShadow = true
+       scene.add(mesh)
+   })
+
+   hotelP.then(mesh => {
+       mesh.scale.set(3,3,3)
+       mesh.position.set(-10,0,20)
        mesh.castShadow = true
        scene.add(mesh)
    })
