@@ -193,7 +193,7 @@
 	 let minuteHand = null
 
 	 clockTowerP.then(ct => {
-	     ct.position.set(10,0,10)
+	     ct.position.set(10,0,0)
 	     ct.castShadow = true
 
 	     let clock = new THREE.Object3D()
@@ -258,7 +258,7 @@
 	 house1P.then(mesh => {
        mesh.scale.set(1.5,1.5,1.5)
        mesh.rotateY(deg_to_rad(-90))
-	     mesh.position.set(15,0,40)
+	     mesh.position.set(12,0,40)
 	     mesh.castShadow = true
 	     scene.add(mesh)
 	 })
@@ -273,7 +273,7 @@
 
    house3P.then(mesh => {
        mesh.rotateY(deg_to_rad(90))
-       mesh.position.set(-15,0,5)
+       mesh.position.set(-5,0,-20)
        mesh.castShadow = true
        scene.add(mesh)
    })
@@ -323,8 +323,8 @@
 
 
 	 // POSITION CAMERA
-	 camera.position.x = 40
-	 camera.position.y = 20
+	 camera.position.x = 60
+	 camera.position.y = 30
 
 	 camera.lookAt(cube.position)
 
