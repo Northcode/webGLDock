@@ -141,6 +141,7 @@
 	 let craneArm1 = null
 	 let craneArm2 = null
 	 let craneGrab = new THREE.Object3D()
+	 let craneGrabbedObject = null
 
 	 craneP.then(m => {
 	     m.scale.set(1.2,1,1.2)
@@ -459,7 +460,7 @@
 		 let intersects = raycast.intersectObjects(pickupableobjects)
 
 
-		 if (intersects.length > 0 && intersects[0].distance < 10) {
+		 if (intersects.length > 0 && intersects[0].distance < 10 && craneGrab.children.length == 0) {
 		     console.log("HIT")
 		     let obj = intersects[0].object
 		     obj.position.set(0,0,0)
@@ -472,6 +473,74 @@
 		     let newpos = craneGrab.getWorldPosition().clone()
 
 		     let obj = craneGrab.children[0]
+
+		     obj.geometry.computeBoundingBox()
+		     let box = obj.geometry.boundingBox
+
+		     let vecs = []
+
+		     let wscale = obj.getWorldScale()
+		     let oorigin = obj.getWorldPosition()
+
+		     let vmax = oorigin.clone().add(box.max.clone().multiply(wscale))
+		     let vmin = oorigin.clone().add(box.min.clone().multiply(wscale))
+
+		     let TRF = oorigin.clone()
+		     TRF.y += box.max.y * wscale.y
+		     TRF.z += box.max.z * wscale.z
+		     TRF.x += box.max.x * wscale.x
+
+		     let TLF = oorigin.clone()
+		     TLF.y += box.max.y * wscale.y
+		     TLF.z -= box.min.z * wscale.z
+		     TLF.x += box.max.x * wscale.x
+
+		     let TRB = oorigin.clone()
+		     TRB.y += box.max.y * wscale.y
+		     TRB.z += box.max.z * wscale.z
+		     TRB.x -= box.min.x * wscale.x
+
+		     let TLB = oorigin.clone()
+		     TLB.y += box.max.y * wscale.y
+		     TLB.z -= box.min.z * wscale.z
+		     TLB.x -= box.min.x * wscale.x
+
+		     let BRF = oorigin.clone()
+		     BRF.y -= box.min.y * wscale.y
+		     BRF.z += box.max.z * wscale.z
+		     BRF.x += box.max.x * wscale.x
+
+		     let BLF = oorigin.clone()
+		     BLF.y -= box.min.y * wscale.y
+		     BLF.z -= box.min.z * wscale.z
+		     BLF.x += box.max.x * wscale.x
+
+		     let BRB = oorigin.clone()
+		     BRB.y -= box.min.y * wscale.y
+		     BRB.z += box.max.z * wscale.z
+		     BRB.x -= box.min.x * wscale.x
+
+		     let BLB = oorigin.clone()
+		     BLB.y -= box.min.y * wscale.y
+		     BLB.z -= box.min.z * wscale.z
+		     BLB.x -= box.min.x * wscale.x
+
+		     vecs.push(new Vector3(0,0,0).subVectors(TRF,TRB))
+		     vecs.push(new Vector3(0,0,0).subVectors(TRF,TLF))
+		     vecs.push(new Vector3(0,0,0).subVectors(TRF,BRF))
+
+		     vecs.push(new Vector3(0,0,0).subVectors(BLF,BRF))
+		     vecs.push(new Vector3(0,0,0).subVectors(BLF,BLB))
+		     vecs.push(new Vector3(0,0,0).subVectors(BLF,TLF))
+
+		     vecs.push(new Vector3(0,0,0).subVectors(BRB,BRF))
+		     vecs.push(new Vector3(0,0,0).subVectors(BRB,BLB))
+		     vecs.push(new Vector3(0,0,0).subVectors(BRB,TRB))
+
+		     vecs.push(new Vector3(0,0,0).subVectors(TLB,TLF))
+		     vecs.push(new Vector3(0,0,0).subVectors(TLB,TRB))
+		     vecs.push(new Vector3(0,0,0).subVectors(TLB,BLB))
+		     
 		     craneGrab.remove(obj)
 		     console.log(newpos)
 		     scene.add(obj)
