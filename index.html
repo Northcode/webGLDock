@@ -389,6 +389,9 @@
 
 	 let newCrate = null
 	 let moveCrate = false
+   let moveBoat = false
+   let moveBoatBack = false
+   let boatTarget = null
 
 	 const update = () => {
 	     cube.rotation.x += 0.01
@@ -406,8 +409,29 @@
 	     cube.scale.z += 0.05 * dir
 
 	     if (newCrate != null && moveCrate) {
-		 newCrate.position.lerp(new THREE.Vector3(8,0,0), 0.08)
+		       newCrate.position.lerp(new THREE.Vector3(8,0,0), 0.08)
 	     }
+
+       if (moveBoat) {
+         boat.position.lerp(boatTarget, 0.004)
+        // boat.position.z -= 0.2
+         if (boat.position.z <= -70){
+           boat.position.z = 70
+           moveBoatBack = true
+           boatTarget = new THREE.Vector3(35, -2, -50);
+           boatCrates.forEach(c => c.material.transparent = true)
+         }
+         if (moveBoatBack) {
+           if (boat.position.z <= 20) {
+             boatTarget = new THREE.Vector3(35, -2, -15);
+           }
+           if (boat.position.z <= -10) {
+             moveBoat = false
+             moveBoatBack = false
+           }
+         }
+       }
+
 	     // Update clock
 
 	     if (hourHand != null && minuteHand != null) {
@@ -446,6 +470,9 @@
 	     if (keyboard.pressed("E")) {
 		 craneArm1.rotation.y -= deg_to_rad(armspeed)
 	     }
+       if (keyboard.pressed("X")) {
+         resetBoat()
+       }
 	     if (keyboard.pressed("F")) {
 
 		 moveCrate = false
@@ -487,59 +514,57 @@
 			 scene.add(arr)
 		     }
 
-
 		     let vmax = oorigin.clone().add(box.max.clone().multiply(wscale))
 		     let vmin = oorigin.clone().add(box.min.clone().multiply(wscale))
-
 
 		     let wrldrot = obj.matrixWorld
 
 		     let TRF = new THREE.Vector3()
-		     TRF.y += box.max.y 
-		     TRF.z += box.max.z 
-		     TRF.x += box.max.x 
+		     TRF.y += box.max.y
+		     TRF.z += box.max.z
+		     TRF.x += box.max.x
 		     TRF.applyMatrix4(wrldrot)
 
 		     let TLF = new THREE.Vector3()
-		     TLF.y += box.max.y 
-		     TLF.z += box.min.z 
-		     TLF.x += box.max.x 
+		     TLF.y += box.max.y
+		     TLF.z += box.min.z
+		     TLF.x += box.max.x
 		     TLF.applyMatrix4(wrldrot)
 
 		     let TRB = new THREE.Vector3()
-		     TRB.y += box.max.y 
-		     TRB.z += box.max.z 
-		     TRB.x += box.min.x 
+		     TRB.y += box.max.y
+		     TRB.z += box.max.z
+		     TRB.x += box.min.x
 		     TRB.applyMatrix4(wrldrot)
 
 		     let TLB = new THREE.Vector3()
-		     TLB.y += box.max.y 
-		     TLB.z += box.min.z 
-		     TLB.x += box.min.x 
+		     TLB.y += box.max.y
+		     TLB.z += box.min.z
+		     TLB.x += box.min.x
 		     TLB.applyMatrix4(wrldrot)
 
 		     let BRF = new THREE.Vector3()
-		     BRF.y += box.min.y 
-		     BRF.z += box.max.z 
-		     BRF.x += box.max.x 
+		     BRF.y += box.min.y
+		     BRF.z += box.max.z
+		     BRF.x += box.max.x
 		     BRF.applyMatrix4(wrldrot)
 
 		     let BLF = new THREE.Vector3()
-		     BLF.y += box.min.y 
-		     BLF.z += box.min.z 
-		     BLF.x += box.max.x 
+		     BLF.y += box.min.y
+		     BLF.z += box.min.z
+		     BLF.x += box.max.x
 		     BLF.applyMatrix4(wrldrot)
 
 		     let BRB = new THREE.Vector3()
-		     BRB.y += box.min.y 
-		     BRB.z += box.max.z 
-		     BRB.x += box.min.x 
+		     BRB.y += box.min.y
+		     BRB.z += box.max.z
+		     BRB.x += box.min.x
 		     BRB.applyMatrix4(wrldrot)
 
 		     let BLB = new THREE.Vector3()
-		     BLB.y += box.min.y 
-		     BLB.z += box.min.z 
-		     BLB.x += box.min.x 
+		     BLB.y += box.min.y
+		     BLB.z += box.min.z
+		     BLB.x += box.min.x
 		     BLB.applyMatrix4(wrldrot)
 
 
@@ -615,7 +640,7 @@
 
 		     raycasts.map(r => new THREE.ArrowHelper(r.ray.direction.normalize(), r.ray.origin, r.far, 0xff0000))
 			     .forEach(a => scene.add(a))
-		     
+
 
 
 		     raycasts.some((r,idx,arr) => {
@@ -629,7 +654,11 @@
 
 			     let isAllFilled = boatCrates.reduce((b,o) => b && !o.material.transparent , true)
 			     console.log(isAllFilled)
-			     
+
+           if (isAllFilled) {
+             resetBoat()
+           }
+
 			     return true
 			 }
 			 return false
@@ -649,6 +678,11 @@
 		 }
 	     }
 	 }
+
+   const resetBoat =() => {
+     moveBoat = true
+     boatTarget = new THREE.Vector3(35, -2, -150)
+   }
 
 	 let animLoop = new THREEx.RenderingLoop()
 	 let physLoop = new THREEx.PhysicsLoop(60)
