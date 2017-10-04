@@ -482,6 +482,12 @@
 		     let wscale = obj.getWorldScale()
 		     let oorigin = obj.getWorldPosition()
 
+		     const draw_vec = (vec) => {
+			 let arr = new THREE.ArrowHelper(vec.clone().normalize(), new THREE.Vector3(0,0,0), vec.length(), 0x00ff00)
+			 scene.add(arr)
+		     }
+
+
 		     let vmax = oorigin.clone().add(box.max.clone().multiply(wscale))
 		     let vmin = oorigin.clone().add(box.min.clone().multiply(wscale))
 
@@ -492,55 +498,99 @@
 
 		     let TLF = oorigin.clone()
 		     TLF.y += box.max.y * wscale.y
-		     TLF.z -= box.min.z * wscale.z
+		     TLF.z += box.min.z * wscale.z
 		     TLF.x += box.max.x * wscale.x
 
 		     let TRB = oorigin.clone()
 		     TRB.y += box.max.y * wscale.y
 		     TRB.z += box.max.z * wscale.z
-		     TRB.x -= box.min.x * wscale.x
+		     TRB.x += box.min.x * wscale.x
 
 		     let TLB = oorigin.clone()
 		     TLB.y += box.max.y * wscale.y
-		     TLB.z -= box.min.z * wscale.z
-		     TLB.x -= box.min.x * wscale.x
+		     TLB.z += box.min.z * wscale.z
+		     TLB.x += box.min.x * wscale.x
 
 		     let BRF = oorigin.clone()
-		     BRF.y -= box.min.y * wscale.y
+		     BRF.y += box.min.y * wscale.y
 		     BRF.z += box.max.z * wscale.z
 		     BRF.x += box.max.x * wscale.x
 
 		     let BLF = oorigin.clone()
-		     BLF.y -= box.min.y * wscale.y
-		     BLF.z -= box.min.z * wscale.z
+		     BLF.y += box.min.y * wscale.y
+		     BLF.z += box.min.z * wscale.z
 		     BLF.x += box.max.x * wscale.x
 
 		     let BRB = oorigin.clone()
-		     BRB.y -= box.min.y * wscale.y
+		     BRB.y += box.min.y * wscale.y
 		     BRB.z += box.max.z * wscale.z
-		     BRB.x -= box.min.x * wscale.x
+		     BRB.x += box.min.x * wscale.x
 
 		     let BLB = oorigin.clone()
-		     BLB.y -= box.min.y * wscale.y
-		     BLB.z -= box.min.z * wscale.z
-		     BLB.x -= box.min.x * wscale.x
+		     BLB.y += box.min.y * wscale.y
+		     BLB.z += box.min.z * wscale.z
+		     BLB.x += box.min.x * wscale.x
 
-		     vecs.push(new Vector3(0,0,0).subVectors(TRF,TRB))
-		     vecs.push(new Vector3(0,0,0).subVectors(TRF,TLF))
-		     vecs.push(new Vector3(0,0,0).subVectors(TRF,BRF))
 
-		     vecs.push(new Vector3(0,0,0).subVectors(BLF,BRF))
-		     vecs.push(new Vector3(0,0,0).subVectors(BLF,BLB))
-		     vecs.push(new Vector3(0,0,0).subVectors(BLF,TLF))
+		     draw_vec(TRF)
+		     draw_vec(TLF)
+		     draw_vec(TRB)
+		     draw_vec(TLB)
+		     draw_vec(BRF)
+		     draw_vec(BLF)
+		     draw_vec(BRB)
+		     draw_vec(BLB)
 
-		     vecs.push(new Vector3(0,0,0).subVectors(BRB,BRF))
-		     vecs.push(new Vector3(0,0,0).subVectors(BRB,BLB))
-		     vecs.push(new Vector3(0,0,0).subVectors(BRB,TRB))
+		     let TRBtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,TRB)
+		     let TLFtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,TLF)
+		     let BRFtTRF = new THREE.Vector3(0,0,0).subVectors(TRF,BRF)
 
-		     vecs.push(new Vector3(0,0,0).subVectors(TLB,TLF))
-		     vecs.push(new Vector3(0,0,0).subVectors(TLB,TRB))
-		     vecs.push(new Vector3(0,0,0).subVectors(TLB,BLB))
+		     let BRFtBLF = new THREE.Vector3(0,0,0).subVectors(BLF,BRF)
+		     let BLBtBLF = new THREE.Vector3(0,0,0).subVectors(BLF,BLB)
+		     let TLFtBLF = new THREE.Vector3(0,0,0).subVectors(BLF,TLF)
+
+		     let BRFtBRB = new THREE.Vector3(0,0,0).subVectors(BRB,BRF)
+		     let BLBtBRB = new THREE.Vector3(0,0,0).subVectors(BRB,BLB)
+		     let TRBtBRB = new THREE.Vector3(0,0,0).subVectors(BRB,TRB)
+
+		     let TLFtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,TLF)
+		     let TRBtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,TRB)
+		     let BLBtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,BLB)
+
+
+
+		     let rTRBtTRF = new THREE.Raycaster(TRB, TRBtTRF.clone().normalize(),0,TRBtTRF.length())
+		     let rTLFtTRF = new THREE.Raycaster(TLF, TLFtTRF.clone().normalize(),0,TLFtTRF.length())
+		     let rBRFtTRF = new THREE.Raycaster(BRF, BRFtTRF.clone().normalize(),0,BRFtTRF.length())
+		     let rBRFtBLF = new THREE.Raycaster(BRF, BRFtBLF.clone().normalize(),0,BRFtBLF.length())
+		     let rBLBtBLF = new THREE.Raycaster(BLB, BLBtBLF.clone().normalize(),0,BLBtBLF.length())
+		     let rTLFtBLF = new THREE.Raycaster(TLF, TLFtBLF.clone().normalize(),0,TLFtBLF.length())
+		     let rBRFtBRB = new THREE.Raycaster(BRF, BRFtBRB.clone().normalize(),0,BRFtBRB.length())
+		     let rBLBtBRB = new THREE.Raycaster(BLB, BLBtBRB.clone().normalize(),0,BLBtBRB.length())
+		     let rTRBtBRB = new THREE.Raycaster(TRB, TRBtBRB.clone().normalize(),0,TRBtBRB.length())
+		     let rTLFtTLB = new THREE.Raycaster(TLF, TLFtTLB.clone().normalize(),0,TLFtTLB.length())
+		     let rTRBtTLB = new THREE.Raycaster(TRB, TRBtTLB.clone().normalize(),0,TRBtTLB.length())
+		     let rBLBtTLB = new THREE.Raycaster(BLB, BLBtTLB.clone().normalize(),0,BLBtTLB.length())
+
+		     let raycasts = []
+
+		     raycasts.push(rTRBtTRF)
+		     raycasts.push(rTLFtTRF)
+		     raycasts.push(rBRFtTRF)
+		     raycasts.push(rBRFtBLF)
+		     raycasts.push(rBLBtBLF)
+		     raycasts.push(rTLFtBLF)
+		     raycasts.push(rBRFtBRB)
+		     raycasts.push(rBLBtBRB)
+		     raycasts.push(rTRBtBRB)
+		     raycasts.push(rTLFtTLB)
+		     raycasts.push(rTRBtTLB)
+		     raycasts.push(rBLBtTLB)
+
+		     raycasts.map(r => new THREE.ArrowHelper(r.ray.direction.normalize(), r.ray.origin, 10, 0xff0000))
+			     .forEach(a => scene.add(a))
 		     
+
 		     craneGrab.remove(obj)
 		     console.log(newpos)
 		     scene.add(obj)
