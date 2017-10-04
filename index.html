@@ -557,6 +557,21 @@
 		     let TRBtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,TRB)
 		     let BLBtTLB = new THREE.Vector3(0,0,0).subVectors(TLB,BLB)
 
+		     draw_vec(TRBtTRF)
+		     draw_vec(TLFtTRF)
+		     draw_vec(BRFtTRF)
+
+		     draw_vec(BRFtBLF)
+		     draw_vec(BLBtBLF)
+		     draw_vec(TLFtBLF)
+
+		     draw_vec(BRFtBRB)
+		     draw_vec(BLBtBRB)
+		     draw_vec(TRBtBRB)
+
+		     draw_vec(TLFtTLB)
+		     draw_vec(TRBtTLB)
+		     draw_vec(BLBtTLB)
 
 
 		     let rTRBtTRF = new THREE.Raycaster(TRB, TRBtTRF.clone().normalize(),0,TRBtTRF.length())
@@ -587,16 +602,28 @@
 		     raycasts.push(rTRBtTLB)
 		     raycasts.push(rBLBtTLB)
 
-		     raycasts.map(r => new THREE.ArrowHelper(r.ray.direction.normalize(), r.ray.origin, 10, 0xff0000))
+		     raycasts.map(r => new THREE.ArrowHelper(r.ray.direction.normalize(), r.ray.origin, r.far, 0xff0000))
 			     .forEach(a => scene.add(a))
 		     
 
 		     craneGrab.remove(obj)
-		     console.log(newpos)
-		     scene.add(obj)
-		     obj.position.copy(newpos)
-		     /* obj.position.set(0,0,0)*/
-		     console.log(obj)
+
+		     raycasts.some((r,idx,arr) => {
+			 let intersects = r.intersectObjects(boatCrates)
+			 if (intersects.length > 0) {
+			     intersects[0].object.material.transparent = false
+
+			     moveCrate = true
+			     crateSpawn.add(newCrate)
+
+			     let isAllFilled = boatCrates.reduce((b,o) => b && !o.material.transparent , true)
+			     console.log(isAllFilled)
+			     
+			     return true
+			 }
+			 return false
+		     })
+
 		 }
 	     }
 	     if (keyboard.pressed("V")) {
