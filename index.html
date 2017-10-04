@@ -7,7 +7,7 @@
 	    canvas { width: 100% height: 100% }
 	</style>
     </head>
-    
+
     <body>
 	<script src="lib/three.js"></script>
 	<script src="lib/threex.keyboardstate.js"></script>
@@ -48,7 +48,7 @@
 	 light.shadow.camera.bottom = -50
 	 light.shadow.camera.near = 1
 	 light.shadow.camera.far = 50
-	 
+
 	 light.castShadow = true
 
 	 scene.add(light)
@@ -57,7 +57,7 @@
 	 let ambient = new THREE.AmbientLight(0x404040)
 	 scene.add(ambient)
 
-	 
+
 	 let shadowHelper = new THREE.CameraHelper(light.shadow.camera)
 	 scene.add(shadowHelper)
 
@@ -112,6 +112,10 @@
 	 let boatP =  load_file("models/boat.json","textures/boatUVs.png")
 	 let crateP =  load_file("models/crate.json","textures/crate.png")
 	 let house1P =  load_file("models/house1.json","textures/house1UVs.png")
+   let house2P = load_file("models/house2.json","textures/house2.png")
+   let house3P = load_file("models/house3.json","textures/house3.png")
+   let block1P = load_file("models/block.json","textures/blockV1.png")
+   let block2P = load_file("models/block.json","textures/blockV2.png")
 	 let factoryP =  load_file("models/factory.json","textures/factory.png")
 
 	 let tracks = new THREE.Object3D()
@@ -156,7 +160,7 @@
 	     let arm2 = new THREE.Mesh( new THREE.BoxGeometry (1,8,1),
 					new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0xffffff, shininess: 15, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true }))
 
-	     let joint = new THREE.Mesh( new THREE.CylinderGeometry(0.8,0.8,1.3,15), 
+	     let joint = new THREE.Mesh( new THREE.CylinderGeometry(0.8,0.8,1.3,15),
 					 new THREE.MeshPhongMaterial( { color: 0x222222, specular: 0xffffff, shininess: 15, morphTargets: true, vertexColors: THREE.FaceColors, flatShading: true }))
 
 	     let pivot2 = new THREE.Object3D()
@@ -197,11 +201,11 @@
 	     let hourPlane = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 0.5, 0.1 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ))
 
 	     let hourPivot = new THREE.Object3D()
-	     
+
 	     clock.position.set(2.7,18,0)
 	     hourPlane.rotateY(deg_to_rad(90))
 	     hourPlane.position.set(0,0,-0.3)
-	     
+
 	     hourPivot.rotateX(deg_to_rad(90))
 
 	     hourPivot.rotateX(deg_to_rad(-60))
@@ -212,18 +216,18 @@
 	     let minutePlane = new THREE.Mesh(new THREE.PlaneBufferGeometry ( 0.9, 0.1 , 10, 10), new THREE.MeshPhongMaterial( { color: 0x0000ff, specular: 0x050505 } ))
 
 	     let minutePivot = new THREE.Object3D()
-	     
+
 	     clock.position.set(2.7,18,0)
 	     minutePlane.rotateY(deg_to_rad(90))
 	     minutePlane.position.set(0,0,-0.3)
-	     
+
 	     minutePivot.rotateX(deg_to_rad(90))
 
 	     minutePivot.rotateX(deg_to_rad(0))
 	     minutePivot.add(minutePlane)
 
 	     minuteHand = minutePivot
-	     
+
 	     clock.add(hourPivot)
 	     clock.add(minutePivot)
 	     ct.add(clock)
@@ -240,7 +244,7 @@
 	 })
 
 	 let crateProto = null
-	 
+
 	 crateP.then(mesh => {
 	     mesh.scale.set(2,2,2)
 	     mesh.castShadow = true
@@ -252,10 +256,43 @@
 	 })
 
 	 house1P.then(mesh => {
-	     mesh.position.set(0,0,10)
+       mesh.scale.set(1.5,1.5,1.5)
+       mesh.rotateY(deg_to_rad(-90))
+	     mesh.position.set(15,0,40)
 	     mesh.castShadow = true
 	     scene.add(mesh)
 	 })
+
+   house2P.then(mesh => {
+       mesh.scale.set(2,2,2)
+       mesh.rotateY(deg_to_rad(90))
+	     mesh.position.set(10,0,25)
+	     mesh.castShadow = true
+	     scene.add(mesh)
+   })
+
+   house3P.then(mesh => {
+       mesh.rotateY(deg_to_rad(90))
+       mesh.position.set(-15,0,5)
+       mesh.castShadow = true
+       scene.add(mesh)
+   })
+
+   block1P.then(mesh => {
+       mesh.scale.set(2,2,2)
+       mesh.rotateY(deg_to_rad(90))
+       mesh.position.set(-20,0,-10)
+       mesh.castShadow = true
+       scene.add(mesh)
+   })
+
+   block2P.then(mesh => {
+       mesh.scale.set(3,3,3)
+       mesh.rotateY(deg_to_rad(180))
+       mesh.position.set(-10,0,40)
+       mesh.castShadow = true
+       scene.add(mesh)
+   })
 
 	 let factory = new THREE.Object3D()
 	 let crateSpawn = new THREE.Object3D()
@@ -280,11 +317,11 @@
 
 	     factory.add(crateSpawn)
 	     factory.add(crateLocation)
-	     
+
 	     scene.add(factory)
 	 })
 
-	 
+
 	 // POSITION CAMERA
 	 camera.position.x = 40
 	 camera.position.y = 20
@@ -312,10 +349,10 @@
 	 collidableMeshList.push(cube)
 
 	 let dir = 1
-	 
+
 	 let newCrate = null
 	 let moveCrate = false
-	 
+
 	 const update = () => {
 	     cube.rotation.x += 0.01
 	     cube.rotation.y += 0.01
@@ -375,7 +412,7 @@
 	     if (keyboard.pressed("F")) {
 
 		 moveCrate = false
-		 
+
 		 let dirvec = craneGrab.getWorldPosition().sub(craneArm2.getWorldPosition()).normalize()
 		 let raycast = new THREE.Raycaster(craneGrab.getWorldPosition().clone(), dirvec)
 
@@ -426,12 +463,12 @@
 	 animLoop.add(animate)
 
 	 physLoop.add(update)
-	 
+
 	 animLoop.start()
 	 physLoop.start()
-	 
+
 
 	</script>
     </body>
-    
+
 </html>
