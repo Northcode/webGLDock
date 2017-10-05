@@ -461,8 +461,8 @@
 
 
 	 // POSITION CAMERA
-	 camera.position.x = 60
-	 camera.position.y = 30
+	 camera.position.x = 70
+	 camera.position.y = 25
 	 camera.lookAt(cube.position)
 
 
@@ -515,7 +515,7 @@
 	     if (moveBoat) {
 		 boat.position.lerp(boatTarget, 0.004)
 
-		 if (boat.position.z <= -70){
+		 if (boat.position.z <= -75){
 		     boat.position.z = 70
 		     moveBoatBack = true
 		     boatTarget = new THREE.Vector3(35, -2, -50);
@@ -547,7 +547,6 @@
 
 	     // Update clock
 	     update_clock(new Date())
-
 
 	     const cranespeed = 0.3
 	     const armspeed = 1
