@@ -133,6 +133,30 @@
 	 dock.add(dockSurface)
 	 scene.add(dock)
 
+   let dockShadow = dock.clone()
+   dockShadow.scale.set(1,0.5,1)
+   dockShadow.castShadow = true
+   dockShadow.receiveShadow = false
+   scene.add(dockShadow)
+
+   // DOCK LEGS
+   let leg1 = new THREE.Mesh(new THREE.BoxGeometry (1,2,1),
+           new THREE.MeshPhongMaterial({
+         color: 0x333333,
+         specular: 0xffffff,
+         shininess: 15,
+         morphTargets: true,
+         vertexColors: THREE.FaceColors,
+         flatShading: true }))
+
+   leg1.position.set(24, -1, 49)
+   scene.add(leg1)
+   let leg2 = leg1.clone()
+   leg2.position.set(24, -1, -49)
+   scene.add(leg2)
+   let leg3 = leg2.clone()
+   leg3.position.set(24, -1, 0)
+   scene.add(leg3)
 
 	 // TRACKS
 	 let tracks = new THREE.Object3D()
@@ -141,7 +165,7 @@
 
 	 tracksP.then(t => {
 
-	     
+
 	     tracks.position.set(20,0,-45)
 	     tracks.receiveShadow = true
 	     t.geometry.computeBoundingBox()
@@ -443,7 +467,7 @@
 
 
 	 // ORBIT CONTROLS
-	 // let controls = new THREE.OrbitControls( camera, renderer.domElement ) 
+	 // let controls = new THREE.OrbitControls( camera, renderer.domElement )
 
 	 // KEYBOARD
 	 let keyboard = new THREEx.KeyboardState()
@@ -554,7 +578,7 @@
 		 craneArm1.rotation.y -= deg_to_rad(armspeed)
 	     }
 
-	     // :::::::::: CRATE ACTIONS 
+	     // :::::::::: CRATE ACTIONS
 	     if (keyboard.pressed("F")) {
 		 moveCrate = false
 
@@ -575,7 +599,7 @@
 
 		     let obj = craneGrab.children[0]
 
-		     //::::::::::: Actually check for intersects 
+		     //::::::::::: Actually check for intersects
 		     bounding_raycasts(obj).some((r,idx,arr) => {
 			 let intersects = r.intersectObjects(boatCrates)
 			 if (intersects.length > 0) {
@@ -617,28 +641,28 @@
 	     let origin = object.getWorldPosition()
 	     let world_matrix = object.matrixWorld
 
-	     let TRF = new THREE.Vector3(bounds.max.x,bounds.max.y,bounds.max.z) 
+	     let TRF = new THREE.Vector3(bounds.max.x,bounds.max.y,bounds.max.z)
 	     TRF.applyMatrix4(world_matrix)
 
 	     let TLF = new THREE.Vector3(bounds.max.x,bounds.max.y,bounds.min.z)
 	     TLF.applyMatrix4(world_matrix)
 
-	     let TRB = new THREE.Vector3(bounds.min.x,bounds.max.y,bounds.max.z) 
+	     let TRB = new THREE.Vector3(bounds.min.x,bounds.max.y,bounds.max.z)
 	     TRB.applyMatrix4(world_matrix)
 
-	     let TLB = new THREE.Vector3(bounds.min.x,bounds.max.y,bounds.min.z) 
+	     let TLB = new THREE.Vector3(bounds.min.x,bounds.max.y,bounds.min.z)
 	     TLB.applyMatrix4(world_matrix)
 
-	     let BRF = new THREE.Vector3(bounds.max.x,bounds.min.y,bounds.max.z) 
+	     let BRF = new THREE.Vector3(bounds.max.x,bounds.min.y,bounds.max.z)
 	     BRF.applyMatrix4(world_matrix)
 
-	     let BLF = new THREE.Vector3(bounds.max.x,bounds.min.y,bounds.min.z) 
+	     let BLF = new THREE.Vector3(bounds.max.x,bounds.min.y,bounds.min.z)
 	     BLF.applyMatrix4(world_matrix)
 
-	     let BRB = new THREE.Vector3(bounds.min.x,bounds.min.y,bounds.max.z) 
+	     let BRB = new THREE.Vector3(bounds.min.x,bounds.min.y,bounds.max.z)
 	     BRB.applyMatrix4(world_matrix)
-	     
-	     let BLB = new THREE.Vector3(bounds.min.x,bounds.min.y,bounds.min.z) 
+
+	     let BLB = new THREE.Vector3(bounds.min.x,bounds.min.y,bounds.min.z)
 	     BLB.applyMatrix4(world_matrix)
 
 	     // ::::::::::::: ALL SIDES ::::::::::::
