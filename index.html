@@ -133,30 +133,30 @@
 	 dock.add(dockSurface)
 	 scene.add(dock)
 
-   let dockShadow = dock.clone()
-   dockShadow.scale.set(1,0.5,1)
-   dockShadow.castShadow = true
-   dockShadow.receiveShadow = false
-   scene.add(dockShadow)
+	 let dockShadow = dock.clone()
+	 dockShadow.scale.set(1,0.5,1)
+	 dockShadow.castShadow = true
+	 dockShadow.receiveShadow = false
+	 scene.add(dockShadow)
 
-   // DOCK LEGS
-   let leg1 = new THREE.Mesh(new THREE.BoxGeometry (1,2,1),
-           new THREE.MeshPhongMaterial({
-         color: 0x333333,
-         specular: 0xffffff,
-         shininess: 15,
-         morphTargets: true,
-         vertexColors: THREE.FaceColors,
-         flatShading: true }))
+	 // DOCK LEGS
+	 let leg1 = new THREE.Mesh(new THREE.BoxGeometry (1,2,1),
+				   new THREE.MeshPhongMaterial({
+				       color: 0x333333,
+				       specular: 0xffffff,
+				       shininess: 15,
+				       morphTargets: true,
+				       vertexColors: THREE.FaceColors,
+				       flatShading: true }))
 
-   leg1.position.set(24, -1, 49)
-   scene.add(leg1)
-   let leg2 = leg1.clone()
-   leg2.position.set(24, -1, -49)
-   scene.add(leg2)
-   let leg3 = leg2.clone()
-   leg3.position.set(24, -1, 0)
-   scene.add(leg3)
+	 leg1.position.set(24, -1, 49)
+	 scene.add(leg1)
+	 let leg2 = leg1.clone()
+	 leg2.position.set(24, -1, -49)
+	 scene.add(leg2)
+	 let leg3 = leg2.clone()
+	 leg3.position.set(24, -1, 0)
+	 scene.add(leg3)
 
 	 // TRACKS
 	 let tracks = new THREE.Object3D()
